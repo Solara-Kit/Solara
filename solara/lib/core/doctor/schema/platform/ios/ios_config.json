@@ -1,0 +1,22 @@
+{
+  "type": "object",
+  "properties": {
+    "PRODUCT_BUNDLE_IDENTIFIER": {
+      "type": "string",
+      "description": "The bundle identifier of the product."
+    },
+    "MARKETING_VERSION": {
+      "type": "string",
+      "description": "The marketing version of the product."
+    },
+    "BUNDLE_VERSION": {
+      "type": "number",
+      "description": "The bundle version of the product."
+    }
+  },
+  "required": [
+    "PRODUCT_BUNDLE_IDENTIFIER",
+    "MARKETING_VERSION",
+    "BUNDLE_VERSION"
+  ]
+}

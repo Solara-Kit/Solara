@@ -1,0 +1,23 @@
+{
+  "type": "object",
+  "required": [
+    "storeFile",
+    "keyAlias",
+    "storePassword",
+    "keyPassword"
+  ],
+  "properties": {
+    "storeFile": {
+      "type": "string"
+    },
+    "keyAlias": {
+      "type": "string"
+    },
+    "storePassword": {
+      "type": "string"
+    },
+    "keyPassword": {
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,75 @@
+PATH
+  remote: .
+  specs:
+    solara (0.2.3)
+      cgi (~> 0.4.1)
+      colorize (~> 1.1.0)
+      json-schema (~> 4.3.1)
+      plist (~> 3.7.1)
+      thor (~> 1.0)
+      webrick (~> 1.8.1)
+      xcodeproj (~> 1.25.0)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    CFPropertyList (3.0.7)
+      base64
+      nkf
+      rexml
+    addressable (2.8.7)
+      public_suffix (>= 2.0.2, < 7.0)
+    atomos (0.1.3)
+    base64 (0.2.0)
+    cgi (0.4.1)
+    claide (1.1.0)
+    colored2 (3.1.2)
+    colorize (1.1.0)
+    diff-lcs (1.5.1)
+    json-schema (4.3.1)
+      addressable (>= 2.8)
+    nanaimo (0.3.0)
+    nkf (0.2.0)
+    plist (3.7.1)
+    public_suffix (6.0.1)
+    rake (13.2.1)
+    rexml (3.3.7)
+    rspec (3.13.0)
+      rspec-core (~> 3.13.0)
+      rspec-expectations (~> 3.13.0)
+      rspec-mocks (~> 3.13.0)
+    rspec-core (3.13.1)
+      rspec-support (~> 3.13.0)
+    rspec-expectations (3.13.3)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.13.0)
+    rspec-mocks (3.13.1)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.13.0)
+    rspec-support (3.13.1)
+    thor (1.3.2)
+    webrick (1.8.1)
+    xcodeproj (1.25.0)
+      CFPropertyList (>= 2.3.3, < 4.0)
+      atomos (~> 0.1.3)
+      claide (>= 1.0.2, < 2.0)
+      colored2 (~> 3.1)
+      nanaimo (~> 0.3.0)
+      rexml (>= 3.3.2, < 4.0)
+
+PLATFORMS
+  arm64-darwin-22
+  x64-mingw-ucrt
+  x64-mingw32
+  x86_64-darwin-23
+  x86_64-linux
+  x86_64-mingw32
+
+DEPENDENCIES
+  bundler (~> 2.0)
+  rake (~> 13.0)
+  rspec (~> 3.13.0)
+  solara!
+
+BUNDLED WITH
+   2.5.18

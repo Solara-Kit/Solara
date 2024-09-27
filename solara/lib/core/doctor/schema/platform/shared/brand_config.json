@@ -1,0 +1,9 @@
+{
+  "type": "object",
+  "brandName": {
+    "type": "string"
+  },
+  "required": [
+    "brandName"
+  ]
+}

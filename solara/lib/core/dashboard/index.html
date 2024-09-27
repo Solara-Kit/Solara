@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Redirecting...</title>
+        <style>
+            body, html {
+                height: 100%;
+                margin: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                background-color: #f0f0f0;
+            }
+            .container {
+                text-align: center;
+            }
+            img {
+                max-width: 50%;
+                max-height: 80vh;
+                object-fit: contain;
+            }
+        </style>
+        <script>
+            setTimeout(() => {
+                window.location.href = 'brand/brand.html?source=remote';
+            }, 500);
+        </script>
+    </head>
+    <body>
+        <div class="container">
+            <img src="solara.png" alt="Logo Image">
+        </div>
+    </body>
+</html>

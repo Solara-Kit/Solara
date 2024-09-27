@@ -1,0 +1,46 @@
+{
+  "name": "BrandTheme",
+  "version": "1.0.0",
+  "colors": {
+    "primary": "#007AFF",
+    "secondary": "#5AC8FA",
+    "background": "#FFFFFF",
+    "surface": "#F2F2F7",
+    "error": "#FF3B30",
+    "onPrimary": "#FFFFFF",
+    "onSecondary": "#000000",
+    "onBackground": "#000000",
+    "onSurface": "#000000",
+    "onError": "#FFFFFF"
+  },
+  "typography": {
+    "fontFamily": {
+      "regular": "",
+      "medium": "",
+      "bold": ""
+    },
+    "fontSize": {
+      "small": 12,
+      "medium": 16,
+      "large": 20,
+      "extraLarge": 24
+    }
+  },
+  "spacing": {
+    "small": 8,
+    "medium": 16,
+    "large": 24,
+    "extraLarge": 32
+  },
+  "borderRadius": {
+    "small": 4,
+    "medium": 8,
+    "large": 12
+  },
+  "elevation": {
+    "none": 0,
+    "low": 2,
+    "medium": 4,
+    "high": 8
+  }
+}

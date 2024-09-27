@@ -1,0 +1,19 @@
+{
+  "type": "object",
+  "required": [
+    "applicationId",
+    "versionName",
+    "versionCode"
+  ],
+  "properties": {
+    "applicationId": {
+      "type": "string"
+    },
+    "versionName": {
+      "type": "string"
+    },
+    "versionCode": {
+      "type": "number"
+    }
+  }
+}

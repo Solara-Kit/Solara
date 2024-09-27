@@ -1,0 +1,20 @@
+#!/usr/bin/env ruby
+# bin/solara
+
+require 'solara'
+
+if RUBY_VERSION < '3.0.0'
+  abort("Solara requires Ruby 3.0.0 or higher")
+end
+
+Dir.glob("#{__dir__}/core/scripts/*.rb").each { |file| require file }
+Dir.glob("#{__dir__}/core/scripts/*.rb").each { |file| require file }
+Dir.glob("#{__dir__}/core/*.rb").each { |file| require file }
+Dir.glob("#{__dir__}/core/doctor/*.rb").each { |file| require file }
+Dir.glob("#{__dir__}/core/aliases/*.rb").each { |file| require file }
+Dir.glob("#{__dir__}/core/dashboard/*.rb").each { |file| require file }
+Dir.glob("#{__dir__}/core/brands/*.rb").each { |file| require file }
+
+
+Solara::Setup.new.setup
+Solara::CLI.start(ARGV)

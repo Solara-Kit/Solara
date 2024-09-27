@@ -1,0 +1,27 @@
+{
+  "type": "object",
+  "required": [
+    "CODE_SIGN_IDENTITY",
+    "DEVELOPMENT_TEAM",
+    "PROVISIONING_PROFILE_SPECIFIER",
+    "CODE_SIGN_STYLE",
+    "CODE_SIGN_ENTITLEMENTS"
+  ],
+  "properties": {
+    "CODE_SIGN_IDENTITY": {
+      "type": "string"
+    },
+    "DEVELOPMENT_TEAM": {
+      "type": "string"
+    },
+    "PROVISIONING_PROFILE_SPECIFIER": {
+      "type": "string"
+    },
+    "CODE_SIGN_STYLE": {
+      "type": "string"
+    },
+    "CODE_SIGN_ENTITLEMENTS": {
+      "type": "string"
+    }
+  }
+}

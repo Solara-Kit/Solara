@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Solara Dashboard</title>
+        <link rel="icon" href="../res/favicon/favicon.ico" type="image/x-icon">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+        <style>
+            :root {
+                --primary-color: #4A90E2;
+                --secondary-color: #50E3C2;
+                --background-color: #F5F7FA;
+                --text-color: #333;
+                --border-color: #E1E4E8;
+                --delete-color: #dc3545;
+                --field-shadow: 0 1.4px 3.5px rgba(0, 0, 0, 0.1);
+            }
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background-color: var(--background-color);
+                color: var(--text-color);
+                line-height: 1.4;
+                margin: 0;
+                padding-top: 77px;
+                font-size: 12.6px;
+            }
+            .container {
+                display: table;
+                width: 100%;
+                height: 100vh;
+            }
+            .row {
+                display: table-row;
+            }
+            .column {
+                display: table-cell;
+                vertical-align: top;
+            }
+            .left {
+                width: 10%;
+                position: fixed;
+            }
+            .middle {
+                width: 75%;
+            }
+            .right {
+                width: 15%;
+                position: fixed;
+                max-height: 50%;
+                overflow-y: auto;
+                padding: 7px;
+                right: 0;
+            }
+            .index {
+                width: 90%;
+                list-style-type: none;
+                padding: 0;
+                margin: 0;
+                text-align: left;
+            }
+            .index ul {
+                list-style-type: none;
+                padding: 0;
+                margin: 0;
+            }
+            .index li {
+                padding: 5.6px;
+                border-bottom: 1px solid #eee;
+                margin-bottom: 7px;
+                text-align: left;
+            }
+
+
+            .index li:last-child {
+                border-bottom: none;
+            }
+            .index a {
+                color: #0066cc;
+                text-decoration: none;
+            }
+            .index a:hover {
+                text-decoration: underline;
+            }
+            .index-item {
+                list-style: none;
+                padding: 7px;
+                background-color: white;
+                border-radius: 3.5px;
+                box-shadow: 0 1.4px 3.5px rgba(0, 0, 0, 0.2);
+                transition: box-shadow 0.3s;
+            }
+
+            .index-item:hover {
+                box-shadow: 0 2.8px 7px rgba(0, 0, 0, 0.3);
+            }
+            .sections {
+                width: 90%;
+                padding: 14px;
+            }
+
+            h1 {
+                margin: 0;
+                font-size: 1.75em;
+            }
+            .section {
+                background-color: white;
+                border-radius: 5.6px;
+                box-shadow: 0 1.4px 7px rgba(0, 0, 0, 0.1);
+                margin-bottom: 21px;
+                padding: 14px;
+            }
+            h2 {
+                color: var(--primary-color);
+                border-bottom: 1.4px solid var(--border-color);
+                padding-bottom: 7px;
+                margin-top: 0;
+                font-size: 1.4em;
+            }
+            .input-group {
+                margin-bottom: 17.5px;
+                display: flex;
+                align-items: center;
+                background-color: white;
+                border-radius: 5.6px;
+                box-shadow: var(--field-shadow);
+                padding: 7px;
+                transition: box-shadow 0.3s ease;
+            }
+            .input-group:hover {
+                box-shadow: 0 2.8px 5.6px rgba(0, 0, 0, 0.15);
+            }
+            .input-wrapper {
+                display: flex;
+                align-items: center;
+                flex-grow: 1;
+            }
+            .input-wrapper input[type="checkbox"] {
+                margin-right: 7px;
+                flex-grow: 0;
+            }
+            .checkbox-label {
+                flex-grow: 1;
+            }
+            .input-wrapper label[for] {
+                margin-right: 7px;
+            }
+            label {
+                display: inline-block;
+                margin-right: 7px;
+                font-weight: bold;
+                min-width: 175px;
+                flex-shrink: 0;
+            }
+            input, select {
+                flex-grow: 1;
+                padding: 7px;
+                border: 0.7px solid var(--border-color);
+                border-radius: 2.8px;
+                font-size: 11.2px;
+            }
+            input[type="color"] {
+                height: 35px;
+                padding: 1.4px;
+            }
+            button {
+                background-color: var(--secondary-color);
+                color: white;
+                padding: 8.4px 14px;
+                border: none;
+                border-radius: 2.8px;
+                cursor: pointer;
+                font-size: 12.6px;
+                transition: background-color 0.3s ease;
+            }
+            button:hover {
+                background-color: #3CC2A3;
+            }
+
+            .save-section-btn {
+                background-color: #28a745;
+                margin-top: 7px;
+                margin-right: 7px;
+            }
+            .save-section-btn:hover {
+                background-color: #218838;
+            }
+            .button-group {
+                display: flex;
+                justify-content: flex-start;
+                margin-top: 14px;
+            }
+            .delete-icon {
+                color: var(--delete-color);
+                cursor: pointer;
+                font-weight: bold;
+                font-size: 14px;
+                line-height: 1;
+                padding: 7px 10.5px;
+                margin-left: 7px;
+                border-radius: 2.8px;
+                transition: background-color 0.3s ease;
+            }
+            .delete-icon:hover {
+                color: #fff;
+                background-color: var(--delete-color);
+            }
+            .section-title-container {
+                margin-bottom: 0.7em;
+            }
+            .section-title-container h2 {
+                margin-bottom: 0.14em;
+            }
+            .section-subtitle {
+                font-size: 1.0em;
+                color: #666;
+                margin-bottom: 22.4px;
+            }
+
+            @media (max-width: 768px) {
+                .sections {
+                    padding: 7px;
+                }
+                .input-group {
+                    flex-direction: column;
+                    align-items: flex-start;
+                }
+                label {
+                    margin-bottom: 3.5px;
+                }
+                .input-wrapper {
+                    width: 100%;
+                }
+            }
+
+            .array-input-container {
+                display: flex;
+                align-items: center;
+                margin-bottom: 3.5px;
+                width: 100%;
+            }
+
+            .array-input {
+                flex-grow: 1;
+                margin-right: 5.6px;
+            }
+
+            .add-array-item {
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                padding: 3.5px 7px;
+                border-radius: 2.8px;
+                cursor: pointer;
+            }
+
+            .array-items-container {
+                margin-top: 3.5px;
+                width: 100%;
+            }
+
+            .array-item {
+                display: flex;
+                align-items: center;
+                margin-bottom: 3.5px;
+            }
+
+            .array-item-input {
+                flex-grow: 1;
+                margin: 11.2px;
+            }
+
+            .delete-array-item {
+                background-color: #f44336;
+                color: white;
+                border: none;
+                padding: 1.4px 4.2px;
+                border-radius: 2.8px;
+                cursor: pointer;
+            }
+            .logo {
+                width: 52.5px;
+                height: 52.5px;
+                margin-right: 14px;
+                filter: drop-shadow(2.1px 2.1px 2.1px rgba(0, 0, 0, 0.3));
+                transition: transform 0.3s ease;
+            }
+            .logo:hover {
+                transform: scale(1.1);
+            }
+
+            .header-container {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: transform 0.3s ease;
+                transform: translateY(0);
+                z-index: 1000;
+            }
+            .scroll-down {
+                transform: translateY(-100%);
+            }
+
+            .header-content {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            header {
+                background-color: var(--primary-color);
+                color: white;
+                text-align: center;
+                padding: 7px 0;
+                box-shadow: 0 1.4px 7px rgba(0, 0, 0, 0.1);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 1000;
+                transition: transform 0.3s ease;
+            }
+            .scroll-up header {
+                transform: translateY(0);
+            }
+            .scroll-down header {
+                transform: translateY(-100%);
+            }
+
+            h1 {
+                margin: 0;
+                font-size: 1.75em;
+            }
+
+            .action-buttons {
+                width: 100%;
+                background-color: var(--primary-color);
+                color: white;
+                margin: 7px;
+                font-size: 12.6px;
+                transition: background-color 0.3s ease, opacity 0.3s ease;
+            }
+
+            .add-field-btn {
+                min-width: 105px;
+                background-color: var(--primary-color);
+                color: white;
+                margin: 7px;
+                font-size: 12.6px;
+                transition: background-color 0.3s ease, opacity 0.3s ease;
+            }
+
+            .apply-changes-button {
+                width: 100%;
+                background-color: #ff4136;
+                color: white;
+                margin: 7px;
+                font-size: 12.6px;
+                transition: background-color 0.3s ease, opacity 0.3s ease;
+            }
+
+            .action-buttons button:hover {
+                background-color: #3A7BC8;
+            }
+
+            #switchButton {
+                display: none;
+            }
+
+            #applyChangesButton {
+                display: none;
+            }
+
+            #error-button {
+                position: fixed;
+                bottom: 14px;
+                right: 14px;
+                background-color: #ff4136;
+                color: white;
+                border: none;
+                border-radius: 50%;
+                width: 42px;
+                height: 42px;
+                font-size: 16.8px;
+                cursor: pointer;
+                justify-content: center;
+                align-items: center;
+                box-shadow: 0 1.4px 7px rgba(0, 0, 0, 0.2);
+                transition: transform 0.2s;
+                display: none;
+                z-index: 1000;
+            }
+
+            #error-button:hover {
+                transform: scale(1.1);
+            }
+
+            .count {
+                position: absolute;
+                top: -3.5px;
+                right: -3.5px;
+                background-color: #ffdc00;
+                color: #111;
+                border-radius: 50%;
+                width: 16.8px;
+                height: 16.8px;
+                font-size: 9.8px;
+                font-weight: bold;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .add-brand-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                color: white;
+                background-color: black;
+                z-index: 998;
+            }
+
+            .add-brand-container {
+                display: none;
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                text-align: center;
+                background-color: white;
+                padding: 28px;
+                border-radius: 14px;
+                box-shadow: 0 2.8px 14px rgba(0, 0, 0, 0.1);
+                z-index: 999;
+                animation: fadeIn 0.5s ease-out;
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translate(-50%, -60%);
+                }
+                to {
+                    opacity: 1;
+                    transform: translate(-50%, -50%);
+                }
+            }
+
+            .add-brand-container img {
+                width: 105px;
+                height: 105px;
+                margin-bottom: 14px;
+            }
+
+            .add-brand-container h2 {
+                font-size: 12.6px;
+                color: #333;
+                margin-bottom: 21px;
+                animation: slideDown 0.5s ease-out 0.3s both;
+            }
+
+            .add-brand-container button {
+                display: block;
+                width: 140px;
+                margin: 14px auto;
+                padding: 10.5px;
+                font-size: 12.6px;
+                background-color: var(--primary-color);
+                color: white;
+                border: none;
+                border-radius: 5.6px;
+                cursor: pointer;
+                transition: background-color 0.3s ease, transform 0.2s ease;
+                opacity: 0;
+                animation: fadeInButton 0.5s ease-out forwards;
+            }
+
+            .add-brand-container button:hover {
+                background-color: #3A7BC8;
+                transform: scale(1.05);
+            }
+
+            .button-message {
+                font-size: 12.6px;
+                color: #666;
+                margin-bottom: 3.5px;
+                opacity: 0;
+                animation: fadeInMessage 0.5s ease-out forwards;
+            }
+
+            @keyframes slideDown {
+                from {
+                    opacity: 0;
+                    transform: translateY(-14px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            @keyframes fadeInButton {
+                to {
+                    opacity: 1;
+                }
+            }
+
+            @keyframes fadeInMessage {
+                to {
+                    opacity: 1;
+                }
+            }
+
+            #brand-details-container {
+                display: none;
+            }
+            #add-brand-container {
+                display: none;
+            }
+
+            .loading-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: black;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+            }
+
+            .loading-overlay-logo {
+                width: 105px;
+                height: 105px;
+                margin-right: 14px;
+                filter: drop-shadow(2.1px 2.1px 2.1px rgba(0, 0, 0, 0.3));
+                transition: transform 0.3s ease;
+            }
+        </style>
+    </head>
+    <body>
+
+        <header id="header" class="header-container">
+            <div class="header-content">
+                <img class="logo" src="../solara.png" alt="Splash Image">
+                <h1><span id="brandNametitle"></span></h1>
+            </div>
+
+        </header>
+
+        <div class="loading-overlay" id="loadingOverlay">
+            <img class="loading-overlay-logo" src="../solara.png" alt="Loading Logo">
+        </div>
+
+        <div class="container">
+            <div class="row">
+
+                <div class="column left">
+                    <div>
+                        <button id="applyChangesButton" class="apply-changes-button">Apply Changes</button>
+                        <button id="allBrandsButton" class="action-buttons">All Brands</button>
+                        <button id="switchButton" class="action-buttons">Switch</button>
+                        <button id="exportBrandBtn" class="action-buttons">Export</button>
+                    </div>
+                </div>
+
+                <div class="column middle">
+
+                    <div id="brand-details-container">
+                        <button id="error-button">
+                            ⚠️
+                            <span class="count">5</span>
+                        </button>
+
+                        <div class="sections">
+                            <div id="sections"></div>
+                        </div>
+                    </div>
+
+                    <div class="add-brand-overlay" id="add-brand-overlay"></div>
+
+                    <div id="add-brand-container" class="add-brand-container">
+                        <img src="../solara.png" alt="Solara Logo">
+                        <h2>Solara simplifies the management of your brand configurations, allowing you to access and update them anytime, anywhere.</h2>
+                        <div class="button-message">You can select a JSON file containing brand configurations that were exported using Solara.</div>
+                        <button id="uploadJsonBtn" style="  animation-delay: 0.5s;">Upload JSON</button>
+                        <div class="button-message" style="  animation-delay: 0.7s;">Alternatively, upload from a folder that includes the brand's JSON files.</div>
+                        <button id="uploadBrandBtn" style="  animation-delay: 0.9s;">Upload Folder</button>
+                        <div class="button-message" style="  animation-delay: 1.1s;">You also have the option to create new brand configurations.</div>
+                        <button id="newBrandBtn" style="  animation-delay: 1.3s;">New Brand</button>
+                    </div>
+
+                </div>
+
+
+                <div class="column right">
+                    <ul id="index" class="index">
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+        <onboard-bottom-sheet id="onboardBottomSheet"></onboard-bottom-sheet>
+
+        <add-field-sheet id="addFieldSheet"></add-field-sheet>
+
+        <message-bottom-sheet id="messageBottomSheet"></message-bottom-sheet>
+
+        <confirmation-dialog id="confirmationDialog"></confirmation-dialog>
+
+        <script type="module" src="BrandDetail.js"></script>
+
+    </body>
+</html>

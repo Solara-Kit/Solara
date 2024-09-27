@@ -1,0 +1,60 @@
+{
+    "title": "Brand Configurations Schema",
+    "type": "object",
+    "properties": {
+        "solaraVersion": {
+            "type": "string"
+        },
+        "brand": {
+            "type": "object",
+            "properties": {
+                "key": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "key",
+                "name"
+            ]
+        },
+        "configurations": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "key": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "inputType": {
+                        "type": "string",
+                        "enum": [
+                            "color",
+                            "text"
+                        ]
+                    },
+                    "content": {
+                        "type": "object",
+                        "additionalProperties": {}
+                    }
+                },
+                "required": [
+                    "key",
+                    "name",
+                    "inputType",
+                    "content"
+                ]
+            }
+        }
+    },
+    "required": [
+        "solaraVersion",
+        "brand",
+        "configurations"
+    ]
+}

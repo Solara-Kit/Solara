@@ -1,0 +1,69 @@
+structure:
+    android:
+        type: directory
+        contents:
+            res:
+                type: directory
+                contents:
+                    values:
+                        type: directory
+                        contents:
+                            strings.xml:
+                                type: file
+                                validations:
+                                    - type: content_includes
+                                      value: <string name="app_name">
+            android_config.json:
+                type: file
+                validations:
+                    - type: valid_json
+                    - type: json_schema
+                      schema_path: platform/android/android_config.json
+            android_signing.json:
+                type: file
+                validations:
+                    - type: valid_json
+                    - type: json_schema
+                      schema_path: platform/android/android_signing.json
+    ios:
+        type: directory
+        contents:
+            ios_config.json:
+                type: file
+                validations:
+                    - type: valid_json
+                    - type: json_schema
+                      schema_path: platform/ios/ios_config.json
+            ios_signing.json:
+                type: file
+                validations:
+                    - type: valid_json
+                    - type: json_schema
+                      schema_path: platform/ios/ios_signing.json
+            InfoPlist.xcstrings:
+                type: file
+                validations:
+                    - type: valid_json
+                    - type: json_schema
+                      schema_path: platform/ios/InfoPlist.xcstrings
+            xcassets:
+                type: directory
+                contents:
+                    AppIcon.appiconset:
+                        type: directory
+    shared:
+        type: directory
+        contents:
+            brand_config.json:
+                type: file
+                validations:
+                    - type: valid_json
+                    - type: json_schema
+                      schema_path: platform/shared/brand_config.json
+            theme.json:
+                type: file
+                validations:
+                    - type: valid_json
+                    - type: json_schema
+                      schema_path: platform/shared/theme.json
+strict: false

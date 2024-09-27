@@ -1,0 +1,15 @@
+{
+  "type": "object",
+  "properties": {
+    "sourceLanguage": {
+      "type": "string"
+    },
+    "strings": {
+      "type": "object"
+    },
+    "version": {
+      "type": "string"
+    }
+  },
+  "required": ["sourceLanguage", "strings", "version"]
+}

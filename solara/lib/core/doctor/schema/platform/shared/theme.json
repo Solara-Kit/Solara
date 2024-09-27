@@ -1,0 +1,133 @@
+{
+  "type": "object",
+  "properties": {
+    "colors": {
+      "type": "object",
+      "properties": {},
+      "required": []
+    },
+    "typography": {
+      "type": "object",
+      "properties": {
+        "fontFamily": {
+          "type": "object",
+          "properties": {
+            "regular": {
+              "type": "string"
+            },
+            "medium": {
+              "type": "string"
+            },
+            "bold": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "regular",
+            "medium",
+            "bold"
+          ]
+        },
+        "fontSize": {
+          "type": "object",
+          "properties": {
+            "small": {
+              "type": "number"
+            },
+            "medium": {
+              "type": "number"
+            },
+            "large": {
+              "type": "number"
+            },
+            "extraLarge": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "small",
+            "medium",
+            "large",
+            "extraLarge"
+          ]
+        }
+      },
+      "required": [
+        "fontFamily",
+        "fontSize"
+      ]
+    },
+    "spacing": {
+      "type": "object",
+      "properties": {
+        "small": {
+          "type": "number"
+        },
+        "medium": {
+          "type": "number"
+        },
+        "large": {
+          "type": "number"
+        },
+        "extraLarge": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "small",
+        "medium",
+        "large",
+        "extraLarge"
+      ]
+    },
+    "borderRadius": {
+      "type": "object",
+      "properties": {
+        "small": {
+          "type": "number"
+        },
+        "medium": {
+          "type": "number"
+        },
+        "large": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "small",
+        "medium",
+        "large"
+      ]
+    },
+    "elevation": {
+      "type": "object",
+      "properties": {
+        "none": {
+          "type": "number"
+        },
+        "low": {
+          "type": "number"
+        },
+        "medium": {
+          "type": "number"
+        },
+        "high": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "none",
+        "low",
+        "medium",
+        "high"
+      ]
+    }
+  },
+  "required": [
+    "colors",
+    "typography",
+    "spacing",
+    "borderRadius",
+    "elevation"
+  ]
+}

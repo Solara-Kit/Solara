@@ -1,0 +1,67 @@
+{
+    "files": [
+        {
+            "source": "brands.json",
+            "target": "../brands.json",
+            "condition": "true"
+        },
+        {
+            "source": "android/assets/",
+            "target": "android/assets/",
+            "condition": "true" 
+        },
+        {
+            "source": "android/res/",
+            "target": "android/res/",
+            "condition": "true" 
+        },
+        {
+            "source": "android/android_config.json",
+            "target": "android/android_config.json",
+            "condition": "true" 
+        },
+        {
+            "source": "android/android_signing.json",
+            "target": "android/android_signing.json",
+            "condition": "true"
+        },
+        {
+            "source": "ios/xcassets/",
+            "target": "ios/xcassets/",
+            "condition": "true"
+        },
+        {
+            "source": "ios/assets/",
+            "target": "ios/assets/",
+            "condition": "true" 
+        },
+        {
+            "source": "ios/InfoPlist.xcstrings",
+            "target": "ios/InfoPlist.xcstrings",
+            "condition": "true"
+        },
+        {
+            "source": "ios/ios_config.json",
+            "target": "ios/ios_config.json",
+            "condition": "true"
+        },
+        {
+            "source": "ios/ios_signing.json",
+            "target": "ios/ios_signing.json",
+            "condition": "true"
+        },
+        {
+            "source": "shared/theme.json",
+            "target": "shared/theme.json",
+            "condition": "true"
+        },
+        {
+            "source": "shared/brand_config.json",
+            "target": "shared/brand_config.json",
+            "condition": "true"
+        }
+    ],
+    "variables": {
+        "platform": "ios"
+    }
+}
