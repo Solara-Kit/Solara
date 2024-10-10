@@ -13,13 +13,17 @@ class BrandConfigManager
         Solara.logger.start_step("Generate #{name} for #{platform}")
         config = load_config(FilePath.brand_config(@brand_key))
         add_basic_brand_info(config, platform)
-        config_generator = BrandConfigGenerator.new(
-            config,
-            FilePath.generated_config(name, platform),
-            language,
-            platform
+        config_generator = CodeGenerator.new(
+            json: config,
+            language: language,
+            parent_class_name: 'BrandConfig',
         )
-        config_generator.generate
+        output_dir = FilePath.generated_config(name, platform)
+        content = config_generator.generate
+        FileManager.create_file_if_not_exist(output_dir)
+        File.write(output_dir, content)
+        Solara.logger.debug("Generated brand config #{@output_dir} for: #{@language}")
+
         Solara.logger.end_step("Generate #{name} for #{platform}")
     end
 
