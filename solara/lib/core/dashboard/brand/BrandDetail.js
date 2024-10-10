@@ -1,4 +1,3 @@
-// app.js
 import BrandDetailModel from './BrandDetailModel.js';
 import BrandDetailView from './BrandDetailView.js';
 import BrandDetailController from './BrandDetailController.js';

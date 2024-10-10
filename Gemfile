@@ -1,3 +1,3 @@
 source "https://rubygems.org"
 
-gemspec
+gem 'solara', '0.2.4'
