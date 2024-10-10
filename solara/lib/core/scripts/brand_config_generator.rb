@@ -80,6 +80,9 @@ class BaseBrandConfigGenerator
       constructor_params << constructor_parameter(key, type)
     end
 
+    content += property_declaration("jsonString", "String")
+    constructor_params << constructor_parameter("jsonString", "String")
+
     content += constructor_declaration(class_name, constructor_params)
     content += instance_declaration(class_name, config)
     content += class_closing
@@ -89,7 +92,6 @@ class BaseBrandConfigGenerator
     config.each do |key, value|
       if value.is_a?(Hash)
         nested_class_name = "#{key[0].upcase}#{key[1..-1]}"  # Capitalize first character
-        puts "nested_class_name = #{nested_class_name}"
         generate_classes(nested_class_name, value, classes)
       elsif value.is_a?(Array) && value.any? { |item| item.is_a?(Hash) }
         nested_class_name = "#{key[0].upcase}#{key[1..-1]}Item"  # Capitalize first character
@@ -178,11 +180,19 @@ class KotlinBrandConfigGenerator < BaseBrandConfigGenerator
   end
 
   def property_declaration(key, type)
-    "  val #{key}: #{type},\n"
+    if key == "jsonString"
+      "  val #{key}: String,\n"
+    else
+      "  val #{key}: #{type},\n"
+    end
   end
 
   def constructor_parameter(key, type)
-    "val #{key}: #{type}"
+    if key == "jsonString"
+      "val #{key}: String"
+    else
+      "val #{key}: #{type}"
+    end
   end
 
   def constructor_declaration(class_name, params)
@@ -190,7 +200,8 @@ class KotlinBrandConfigGenerator < BaseBrandConfigGenerator
   end
 
   def instance_declaration(class_name, config)
-    "  companion object {\n    val instance = #{class_name}(\n#{config.map { |k, v| "      #{k} = #{value_for(v, k, '      ')}" }.join(",\n")}\n    )\n  }\n"
+    json_string = config.to_json.gsub('"', '\\"')
+    "  companion object {\n    val instance = #{class_name}(\n#{config.map { |k, v| "      #{k} = #{value_for(v, k, '      ')}" }.join(",\n")},\n      jsonString = \"#{json_string}\"\n    )\n  }\n"
   end
 
   def class_closing
@@ -272,11 +283,19 @@ class SwiftBrandConfigGenerator < BaseBrandConfigGenerator
   end
 
   def property_declaration(key, type)
-    "  let #{key}: #{type}\n"
+    if key == "jsonString"
+      "  let #{key}: String\n"
+    else
+      "  let #{key}: #{type}\n"
+    end
   end
 
   def constructor_parameter(key, type)
-    "#{key}: #{type}"
+    if key == "jsonString"
+      "#{key}: String"
+    else
+      "#{key}: #{type}"
+    end
   end
 
   def constructor_declaration(class_name, params)
@@ -284,7 +303,8 @@ class SwiftBrandConfigGenerator < BaseBrandConfigGenerator
   end
 
   def instance_declaration(class_name, config)
-    "  static let shared = #{class_name}(\n#{config.map { |k, v| "    #{k}: #{value_for(v, k, '    ')}" }.join(",\n")}\n  )\n"
+    json_string = config.to_json.gsub('"', '\\"')
+    "  static let shared = #{class_name}(\n#{config.map { |k, v| "    #{k}: #{value_for(v, k, '    ')}" }.join(",\n")},\n    jsonString: \"#{json_string}\"\n  )\n"
   end
 
   def class_closing
@@ -338,11 +358,19 @@ class DartBrandConfigGenerator < BaseBrandConfigGenerator
   end
 
   def property_declaration(key, type)
-    "  final #{type} #{key};\n"
+    if key == "jsonString"
+      "  final String #{key};\n"
+    else
+      "  final #{type} #{key};\n"
+    end
   end
 
   def constructor_parameter(key, type)
-    "required this.#{key}"
+    if key == "jsonString"
+      "required this.#{key}"
+    else
+      "required this.#{key}"
+    end
   end
 
   def constructor_declaration(class_name, params)
@@ -350,7 +378,8 @@ class DartBrandConfigGenerator < BaseBrandConfigGenerator
   end
 
   def instance_declaration(class_name, config)
-    "  static const #{class_name} instance = #{class_name}(\n#{config.map { |k, v| "    #{k}: #{value_for(v, k, '    ')}" }.join(",\n")}\n  );\n"
+    json_string = config.to_json.gsub('"', '\\"')
+    "  static const #{class_name} instance = #{class_name}(\n#{config.map { |k, v| "    #{k}: #{value_for(v, k, '    ')}" }.join(",\n")},\n    jsonString: \"#{json_string}\"\n  );\n"
   end
 
   def class_closing
