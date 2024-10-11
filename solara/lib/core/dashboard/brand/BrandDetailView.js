@@ -92,23 +92,101 @@ class BrandDetailView {
         return section;
     }
 
-    populateSection(sectionItem, sectionElement, content, inputType) {
+    populateJsonFields(data, container, content, inputType, level = 0) {
+        container.dataset.key = data.key
+        container.dataset.level = `${level}`
+
         for (const [key, value] of Object.entries(content)) {
             if (Array.isArray(value)) {
-                sectionElement.appendChild(this.createInputField(sectionItem, key, value, 'array'));
-            } else if (typeof value === 'object' && value !== null) {
-                for (const [subKey, subValue] of Object.entries(value)) {
-                    const subInputType = subValue === true || subValue === false ? 'boolean' : inputType;
-                    sectionElement.appendChild(this.createInputField(sectionItem, `${key}.${subKey}`, subValue, subInputType));
-                }
-            } else {
-                const fieldInputType = value === true || value === false ? 'boolean' : inputType;
-                sectionElement.appendChild(this.createInputField(sectionItem, key, value, fieldInputType));
+                this.populateJsonArray(key, value, data, container, content, inputType, level)
+                continue
             }
+
+            if (value !== null && typeof value === 'object') {
+                this.populateJsonObject(key, value, data, container, content, inputType, level)
+                continue
+            }
+
+            const fieldElement = this.createJsonField(data, key, value, inputType, level)
+            container.appendChild(fieldElement);
         }
     }
 
-    createInputField(sectionItem, key, value, inputType) {
+    populateJsonArray(key, value, data, container, content, inputType, level) {
+        const arrayContainer = document.createElement('div');
+        arrayContainer.className = 'json-array';
+        arrayContainer.classList.add(`json-array-${level}`);
+
+        const labelContainer = document.createElement('div');
+        labelContainer.className = 'json-array-label-group';
+        const label = document.createElement('label');
+        label.textContent = key;
+        labelContainer.appendChild(label);
+
+        // TODO: to be implemented later
+        if (false) {
+            const addButton = document.createElement('button');
+            addButton.className = 'add-array-item';
+            addButton.textContent = '+';
+            let lastItemIndex = value.length - 1
+            addButton.addEventListener('click', () => {
+                const itemContainer = document.createElement('div');
+                itemContainer.className = 'json-array-item';
+
+                lastItemIndex += 1
+                let fieldKey = `${key}[${lastItemIndex}]`
+
+                const indexed = container.querySelectorAll(`.json-array-item-indexed-${level}`).length !== 0;
+                if (indexed) {
+                    fieldKey = lastItemIndex
+                }
+                const field = this.createJsonField(data, fieldKey, '', inputType, level + 1)
+                field.classList.add(`json-array-item-${level}`);
+                itemContainer.appendChild(field);
+
+                arrayContainer.insertBefore(itemContainer, arrayContainer.lastElementChild);
+
+                this.onSectionChanged(data, container.closest('.section'));
+            });
+        }
+        arrayContainer.appendChild(labelContainer);
+
+        value.forEach((item, index) => {
+            const itemContainer = document.createElement('div');
+            itemContainer.className = 'json-array-item';
+            itemContainer.classList.add(`json-array-item-${level}`);
+            if (typeof item === 'object' && item !== null) {
+                this.populateJsonFields(data, itemContainer, item, inputType, level + 1);
+            } else {
+                itemContainer.dataset.level = `${level + 1}`
+                const field = this.createJsonField(data, `${index}`, item, inputType, level + 1)
+                itemContainer.classList.add(`json-array-item-indexed-${level}`);
+                itemContainer.appendChild(field);
+            }
+            arrayContainer.appendChild(itemContainer);
+        });
+
+        // TODO: to be implemented later
+        // arrayContainer.appendChild(addButton);
+        container.appendChild(arrayContainer);
+    }
+
+    populateJsonObject(key, value, data, container, content, inputType, level) {
+        const objectContainer = document.createElement('div');
+        objectContainer.className = 'json-object';
+        objectContainer.classList.add(`json-object-${level}`);
+        const objectLabel = document.createElement('label');
+        objectLabel.className = 'json-object-title';
+        objectLabel.textContent = key;
+        objectContainer.appendChild(objectLabel);
+
+        this.populateJsonFields(data, objectContainer, value, inputType, level + 1);
+
+        container.appendChild(objectContainer);
+    }
+
+    createJsonField(data, key, value, inputType, level) {
+        const fieldInputType = typeof value === 'boolean' ? 'boolean' : inputType;
         const container = document.createElement('div');
         container.className = 'input-group';
         const label = document.createElement('label');
@@ -118,41 +196,7 @@ class BrandDetailView {
         const inputWrapper = document.createElement('div');
         inputWrapper.className = 'input-wrapper';
 
-        if (inputType === 'array') {
-            const arrayInputContainer = document.createElement('div');
-            arrayInputContainer.className = 'array-input-container';
-
-            const input = document.createElement('input');
-            input.type = 'text';
-            input.id = key;
-            input.className = 'array-input';
-            input.placeholder = 'Enter array value';
-
-            const addButton = document.createElement('button');
-            addButton.className = 'add-array-item';
-            addButton.textContent = '+';
-
-            arrayInputContainer.appendChild(input);
-            arrayInputContainer.appendChild(addButton);
-
-            const arrayItemsContainer = document.createElement('div');
-            arrayItemsContainer.className = 'array-items-container';
-
-            inputWrapper.appendChild(arrayInputContainer);
-            inputWrapper.appendChild(arrayItemsContainer);
-
-            if (Array.isArray(value)) {
-                value.forEach(item => {
-                    this.addArrayItem(sectionItem, arrayItemsContainer, item);
-                });
-            }
-
-            addButton.addEventListener('click', () => {
-                this.addArrayItem(sectionItem, arrayItemsContainer, input.value.trim());
-                input.value = '';
-            });
-
-        } else if (inputType === 'boolean') {
+        if (fieldInputType === 'boolean') {
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
             checkbox.id = key;
@@ -165,18 +209,18 @@ class BrandDetailView {
 
             checkbox.addEventListener('change', () => {
                 checkboxLabel.textContent = checkbox.checked ? 'True' : 'False';
-                this.onSectionChanged(sectionItem, container.closest('.section'));
+                this.onSectionChanged(data, container.closest('.section'));
             });
 
             inputWrapper.appendChild(checkbox);
             inputWrapper.appendChild(checkboxLabel);
         } else {
             const input = document.createElement('input');
-            input.type = inputType;
+            input.type = fieldInputType;
             input.id = key;
 
             console.log(value)
-            if (inputType === 'color') {
+            if (fieldInputType === 'color') {
                 input.value = value.startsWith('#') ? value : `#${value.substring(4)}`;
             } else {
                 input.value = value;
@@ -188,45 +232,23 @@ class BrandDetailView {
         const deleteIcon = document.createElement('span');
         deleteIcon.className = 'delete-icon';
         deleteIcon.textContent = '×';
-        deleteIcon.onclick = () => this.onDeleteField(sectionItem, container);
+        deleteIcon.onclick = () => this.onDeleteField(data, container);
         inputWrapper.appendChild(deleteIcon);
 
         container.appendChild(inputWrapper);
 
-        container.addEventListener('change', () => this.onSectionChanged(sectionItem, container.closest('.section')));
+        container.addEventListener('change', () => this.onSectionChanged(data, container.closest('.section')));
+
+        container.classList.add(`json-field-${level}`);
 
         return container;
     }
 
-    addArrayItem(sectionItem, container, value) {
-        const itemContainer = document.createElement('div');
-        itemContainer.classList.add('array-item');
-
-        const itemInput = document.createElement('input');
-        itemInput.type = 'text';
-        itemInput.classList.add('array-item-input');
-        itemInput.value = value;
-
-        const deleteButton = document.createElement('button');
-        deleteButton.classList.add('delete-array-item');
-        deleteButton.textContent = '×';
-        deleteButton.addEventListener('click', () => {
-            itemContainer.remove();
-            this.onSectionChanged(sectionItem, container.closest('.section'));
-        });
-
-        itemContainer.appendChild(itemInput);
-        itemContainer.appendChild(deleteButton);
-        container.appendChild(itemContainer);
-
-        this.onSectionChanged(sectionItem, container.closest('.section'));
-    }
-
-    showAddFieldForm(sectionItem, sectionElement, inputType) {
+    showAddFieldForm(data, sectionElement, inputType) {
         this.addFieldSheet.show(inputType, (name, value) => {
-            const newField = this.createInputField(sectionItem, name, value, inputType);
+            const newField = this.createJsonField(data, name, value, inputType, 0);
             sectionElement.insertBefore(newField, sectionElement.lastElementChild);
-            this.onSectionChanged(sectionItem, sectionElement);
+            this.onSectionChanged(data, sectionElement);
         })
     }
 

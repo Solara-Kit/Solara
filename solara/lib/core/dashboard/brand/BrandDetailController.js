@@ -81,7 +81,6 @@ class BrandDetailController {
     async addNewBrand() {
         this.view.showOnboardBrandForm(async (key, name) => {
             const configurations = await this.model.createNewBrandConfogurations()
-            console.log(configurations)
             await this.addBrand(key, name, configurations)
         })
     }
@@ -143,20 +142,19 @@ class BrandDetailController {
             const sectionItems = configuraationsResult.configurations
 
             for (let i = 0; i < sectionItems.length; i++) {
-                const sectionInfo = sectionItems[i];
-                console.log('Processing section:', i, sectionInfo);
+                const sectionData = sectionItems[i];
 
-                if (sectionInfo.key === 'theme.json') {
-                    this.createThemeSections(sectionInfo)
-                } else if (sectionInfo.key === 'InfoPlist.xcstrings') {
+                if (sectionData.key === 'theme.json') {
+                    this.createThemeSections(sectionData)
+                } else if (sectionData.key === 'InfoPlist.xcstrings') {
                     this.createSection(
-                        sectionInfo.key,
-                        sectionInfo,
-                        new InfoPlistStringCatalogManager(sectionInfo.content).extractLocalizations(),
-                        sectionInfo.name,
-                        sectionInfo.inputType)
+                        sectionData.key,
+                        sectionData,
+                        new InfoPlistStringCatalogManager(sectionData.content).extractLocalizations(),
+                        sectionData.name,
+                        sectionData.inputType)
                 } else {
-                    this.createSection(sectionInfo.key, sectionInfo, sectionInfo.content, sectionInfo.name, sectionInfo.inputType)
+                    this.createSection(sectionData.key, sectionData, sectionData.content, sectionData.name, sectionData.inputType)
                 }
             }
         } catch (error) {
@@ -165,55 +163,53 @@ class BrandDetailController {
         }
     }
 
-    createThemeSections(sectionInfo) {
-        this.createSection(`${sectionInfo.key}_colors`,
-            sectionInfo,
-            sectionInfo.content.colors,
+    createThemeSections(sectionData) {
+        this.createSection(`${sectionData.key}_colors`,
+            sectionData,
+            sectionData.content.colors,
             'Theme Colors',
             'color',
             'colors')
-        this.createSection(`${sectionInfo.key}_typography`,
-            sectionInfo,
-            sectionInfo.content.typography,
+        this.createSection(`${sectionData.key}_typography`,
+            sectionData,
+            sectionData.content.typography,
             'Theme Typography',
             'text',
             'typography')
-        this.createSection(`${sectionInfo.key}_spacing`,
-            sectionInfo,
-            sectionInfo.content.spacing,
+        this.createSection(`${sectionData.key}_spacing`,
+            sectionData,
+            sectionData.content.spacing,
             'Theme Spacing', 'text',
             'spacing')
         this.createSection(
-            `${sectionInfo.key}_borderRadius`,
-            sectionInfo,
-            sectionInfo.content.borderRadius,
+            `${sectionData.key}_borderRadius`,
+            sectionData,
+            sectionData.content.borderRadius,
             'Theme Border Radius',
             'text',
             'borderRadius')
         this.createSection(
-            `${sectionInfo.key}_elevation`,
-            sectionInfo,
-            sectionInfo.content.elevation,
+            `${sectionData.key}_elevation`,
+            sectionData,
+            sectionData.content.elevation,
             'Theme Elevation',
             'text',
             'elevation')
     }
 
-    createSection(id, sectionInfo, content, sectionName, inputType, propertiesGroupName = null) {
-        const sectionElement = this.view.createSection(sectionInfo.key, sectionName, inputType);
+    createSection(id, sectionData, content, sectionName, inputType, propertiesGroupName = null) {
+        const sectionElement = this.view.createSection(sectionData.key, sectionName, inputType);
         sectionElement.id = id;
         sectionElement.dataset.propertiesGroupName = propertiesGroupName
 
         this.view.sectionsContainer.appendChild(sectionElement);
 
-        console.log('Section element created:', sectionElement);
-
-        this.view.populateSection(sectionInfo, sectionElement, content, inputType);
+        this.view.populateJsonFields(sectionData, sectionElement, content, inputType);
 
         const addButton = document.createElement('button');
         addButton.textContent = 'Add Field';
         addButton.className = 'add-field-btn';
-        addButton.onclick = () => this.addNewField(sectionInfo, sectionElement, inputType);
+        addButton.onclick = () => this.addNewField(sectionData, sectionElement, inputType);
         sectionElement.appendChild(addButton);
     }
 
@@ -229,25 +225,60 @@ class BrandDetailController {
         }
     }
 
-    getSectionConfiguration(sectionElement) {
-        const configuration = {};
-        const inputs = sectionElement.querySelectorAll('input:not(.array-item-input)');
-        inputs.forEach(input => {
-            const keys = input.id.split('.');
-            let current = configuration;
-            for (let i = 0; i < keys.length - 1; i++) {
-                if (!current[keys[i]]) {
-                    current[keys[i]] = {};
-                }
-                current = current[keys[i]];
-            }
-            const lastKey = keys[keys.length - 1];
+    collectJsonData(container) {
+        const data = {};
+        const level = container.dataset.level
 
-            if (input.classList.contains('array-input')) {
-                const arrayItemsContainer = input.closest('.input-wrapper').querySelector('.array-items-container');
-                current[lastKey] = this.getArrayValue(arrayItemsContainer);
-            } else if (input.type === 'checkbox') {
-                current[lastKey] = input.checked;
+        const jsonObjects = container.querySelectorAll(`.json-object-${level}`);
+        jsonObjects.forEach(jsonObject => {
+            const jsonObjectLabel = jsonObject.querySelector('label').textContent;
+            data[jsonObjectLabel] = this.collectJsonData(jsonObject);
+
+        });
+
+        const group = container.querySelectorAll(`.json-array-${level}`);
+        group.forEach(arrayItem => {
+            const label = arrayItem.querySelector('label').textContent;
+            const items = arrayItem.querySelectorAll(`.json-array-item-${level}`);
+            const indexed = arrayItem.querySelectorAll(`.json-array-item-indexed-${level}`).length !== 0;
+
+            data[label] = Array.from(items).map((item, index) => {
+                const values = this.collectJsonData(item)
+                if (indexed) {
+                    return values[index]
+                }
+                return values;
+            });
+        });
+
+        const result = this.collectJsonFields(container, level);
+
+        Object.keys(data).forEach(key => {
+            result[key] = data[key];
+        });
+        return result
+    }
+
+    collectJsonFields(container, level) {
+        const result = {};
+
+        const inputFields = container.querySelectorAll(`.json-field-${level}`);
+        inputFields.forEach(inputField => {
+            const values = this.getInputFieldsData(inputField);
+            Object.keys(values).forEach(key => {
+                result[key] = values[key];
+            });
+        })
+        return result
+    }
+
+    getInputFieldsData(container) {
+        const data = {};
+
+        const inputs = container.querySelectorAll('input');
+        inputs.forEach(input => {
+            if (input.type === 'checkbox') {
+                data[input.id] = input.checked;
             } else {
                 let value = input.value;
                 if (input.type === 'color') {
@@ -256,10 +287,11 @@ class BrandDetailController {
                     // Convert to number if it's a valid number string
                     value = parseFloat(value);
                 }
-                current[lastKey] = value;
+                data[input.id] = value;
             }
         });
-        return configuration;
+
+        return data;
     }
 
     addNewField(sectionItem, sectionElement, inputType) {
@@ -326,12 +358,12 @@ class BrandDetailController {
                 .filter(element => element.dataset.key === sectionKey);
 
             if (sectionElements.length === 1) {
-                return this.getSectionConfiguration(sectionElements[0])
+                return this.collectJsonData(sectionElements[0])
             }
 
             const configurations = sectionElements.map(sectionElement => {
                 const propertiesGroupName = sectionElement.dataset.propertiesGroupName;
-                const config = this.getSectionConfiguration(sectionElement);
+                const config = this.collectJsonData(sectionElement);
 
                 if (propertiesGroupName !== "null") {
                     return {[propertiesGroupName]: config};
@@ -340,15 +372,11 @@ class BrandDetailController {
                 }
             });
 
-            const result = configurations.reduce((acc, config) => {
+            return configurations.reduce((acc, config) => {
                 const key = Object.keys(config)[0]; // Get the key from the configuration item
                 acc[key] = config[key]; // Assign the value to the dynamic object
                 return acc;
             }, {});
-
-            const json = JSON.stringify(result, null, 2); // Pretty-printing JSON
-            console.log(json);
-            return result;
 
         } catch (error) {
             console.error('Error downloading brand:', error);
@@ -397,7 +425,6 @@ class BrandDetailController {
     }
 
 }
-
 
 
 export default BrandDetailController;
