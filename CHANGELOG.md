@@ -1,5 +1,13 @@
 # Changelog
 
+## Version 0.4.0
+
+Enhance Dashboard: Implement Comprehensive Support for JSON Objects
+
+- Added functionality to fully process and display JSON objects within the dashboard.
+- Updated data handling methods to accommodate nested structures and arrays.
+- Improved UI components to render JSON data dynamically.
+
 ## Version 0.3.0
 
 ### Enhancements
