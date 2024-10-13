@@ -15,7 +15,6 @@ class BrandLocalSource {
             }
 
             const url = `/brand/details?brand_key=${encodeURIComponent(brandKey)}`;
-            console.log('Fetching configurations from:', url);
 
             const response = await fetch(url);
             const result = await response.json();
@@ -44,13 +43,13 @@ class BrandLocalSource {
         }
     }
 
-    async saveSection(sectionItem, configuration, brandKey) {
+    async saveSection(key, configuration, brandKey) {
         if (this.savingInProgress) return;
         this.savingInProgress = true;
 
         const dataToSend = {
             brand_key: brandKey,
-            key: sectionItem.key,
+            key: key,
             data: configuration
         };
 
@@ -69,7 +68,6 @@ class BrandLocalSource {
                 throw new Error(result.error);
             }
 
-            console.log(`${sectionItem.name} configuration saved successfully!`);
             return true;
         } catch (error) {
             console.error('Error saving configuration:', error);
@@ -95,7 +93,6 @@ class BrandLocalSource {
                 throw new Error(result.error);
             }
 
-            console.log('Switch to brand result:', result);
             return true;
         } catch (error) {
             console.error('Error switching to brand:', error);
