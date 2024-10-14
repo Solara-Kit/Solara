@@ -22,7 +22,7 @@ class BrandConfigManager
         content = config_generator.generate
         FileManager.create_file_if_not_exist(output_dir)
         File.write(output_dir, content)
-        Solara.logger.debug("Generated brand config #{@output_dir} for: #{@language}")
+        Solara.logger.debug("Generated brand config #{output_dir} for: #{@language}")
 
         Solara.logger.end_step("Generate #{name} for #{platform}")
     end

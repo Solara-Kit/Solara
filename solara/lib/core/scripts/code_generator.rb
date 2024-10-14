@@ -20,15 +20,18 @@ class CodeGenerator
   def initialize(
     json:,
     language:,
-    parent_class_name:)
+    parent_class_name:,
+    type_overrides: {}
+    )
     @json = json
     @language = language
     @parent_class_name = parent_class_name
+    @type_overrides = type_overrides
     @generator = create_language_generator
   end
 
   def generate
-      @generator.generate_content
+    @generator.generate_content
   end
 
   private
@@ -36,11 +39,11 @@ class CodeGenerator
   def create_language_generator
     case @language
     when Language::Kotlin
-      KotlinCodeGenerator.new(@json, @parent_class_name)
+      KotlinCodeGenerator.new(@json, @parent_class_name, @type_overrides)
     when Language::Swift
-      SwiftCodeGenerator.new(@json, @parent_class_name)
+      SwiftCodeGenerator.new(@json, @parent_class_name, @type_overrides)
     when Language::Dart
-      DartCodeGenerator.new(@json, @parent_class_name)
+      DartCodeGenerator.new(@json, @parent_class_name, @type_overrides)
     else
       raise ArgumentError, "Unsupported language: #{@language}"
     end
@@ -48,9 +51,10 @@ class CodeGenerator
 end
 
 class BaseCodeGenerator
-  def initialize(json, parent_class_name)
+  def initialize(json, parent_class_name, type_overrides)
     @parent_class_name = parent_class_name
     @json = json
+    @type_overrides = type_overrides
   end
 
   def generate_content
@@ -65,24 +69,30 @@ class BaseCodeGenerator
       content += "\n"
     end
 
-    content
+    other_classes = language_specific_classes
+    other_classes.each do |item|
+      content += item
+    end
+
+    content + "\n"
   end
 
   def generate_classes(class_name, json, classes, generate_json: false)
-    content = class_declaration(class_name)
+    overridden_type = @type_overrides[class_name] || class_name
+    content = class_declaration(overridden_type)
     constructor_params = []
 
     json.each do |key, value|
-      type = value_type(value, key)
+      type = overriden_value_type(value, key)
       content += property_declaration(key, type, json)
       constructor_params << constructor_parameter(key, type)
     end
 
     content += property_declaration("asJson", "String", json)
 
-    content += constructor_declaration(class_name, constructor_params)
-    content += instance_declaration(class_name, json)
-    content += json_methods(json, class_name)
+    content += constructor_declaration(overridden_type, constructor_params)
+    content += instance_declaration(overridden_type, json)
+    content += json_methods(json, overridden_type)
     content += class_closing
 
     classes << content
@@ -97,12 +107,15 @@ class BaseCodeGenerator
       end
     end
   end
-
   def class_declaration(class_name)
     raise NotImplementedError, "Subclasses must implement class_declaration"
   end
 
   def property_declaration(key, type, json)
+    raise NotImplementedError, "Subclasses must implement property_declaration"
+  end
+
+  def color_type
     raise NotImplementedError, "Subclasses must implement property_declaration"
   end
 
@@ -134,8 +147,13 @@ class BaseCodeGenerator
     raise NotImplementedError, "Subclasses must implement value_type"
   end
 
+  def overriden_value_type(value, class_prefix)
+    type = value_type(value, class_prefix)
+    @type_overrides[type] || type
+  end
+
   def value_for(value, class_prefix, indent)
-    raise NotImplementedError, "Subclasses must implement value_type"
+    raise NotImplementedError, "Subclasses must implement value_for"
   end
 
   def color_for(value)
@@ -145,6 +163,12 @@ class BaseCodeGenerator
   def language_specific_null
     raise NotImplementedError, "Subclasses must implement language_specific_null"
   end
+
+
+  def language_specific_classes
+    []
+  end
+
 end
 
 class KotlinCodeGenerator < BaseCodeGenerator
@@ -161,9 +185,15 @@ class KotlinCodeGenerator < BaseCodeGenerator
     if key == "asJson"
       json_string = json.to_json.gsub('"', '\\"')
       "  val #{key}: String = \"#{json_string}\",\n"
+    elsif json[key].is_a?(String) && ColorDetector.new(json[key]).color?
+      "  val #{key}: #{color_type},\n"
     else
       "  val #{key}: #{type},\n"
     end
+  end
+
+  def color_type
+    "Int"
   end
 
   def constructor_parameter(key, type)
@@ -212,7 +242,9 @@ class KotlinCodeGenerator < BaseCodeGenerator
         "listOf(\n#{indent}  #{array_items}\n#{indent})"  # Use listOf for non-empty lists
       end
     when Hash
-      "#{class_prefix[0].upcase}#{class_prefix[1..-1]}.instance"
+      name = "#{class_prefix[0].upcase}#{class_prefix[1..-1]}"
+      overridden_type = @type_overrides[name] || name
+      "#{overridden_type}.instance"
     else
       language_specific_null
     end
@@ -220,7 +252,11 @@ class KotlinCodeGenerator < BaseCodeGenerator
 
   def value_type(value, class_prefix)
     case value
-    when String then 'String'
+    when String
+      if ColorDetector.new(value).color?
+        return color_type
+      end
+      return 'String'
     when Integer then 'Int'
     when Float then 'Float'
     when TrueClass, FalseClass then 'Boolean'
@@ -267,9 +303,15 @@ class SwiftCodeGenerator < BaseCodeGenerator
     if key == "asJson"
       json_string = json.to_json.gsub('"', '\\"')
       "  let #{key}: String = \"#{json_string}\"\n"
+    elsif json[key].is_a?(String) && ColorDetector.new(json[key]).color?
+      "  let #{key}: UIColor\n"
     else
       "  let #{key}: #{type}\n"
     end
+  end
+
+  def color_type
+    "UIColor"
   end
 
   def constructor_parameter(key, type)
@@ -285,21 +327,54 @@ class SwiftCodeGenerator < BaseCodeGenerator
   end
 
   def json_methods(json, class_name)
-    "  func toJson() -> String? {\n" +
-    "    let encoder = JSONEncoder()\n" +
-    "    if let jsonData = try? encoder.encode(self) {\n" +
-    "      return String(data: jsonData, encoding: .utf8)\n" +
-    "    }\n" +
-    "    return nil\n" +
-    "  }\n\n" +
-    "  static func fromJson(_ json: String) -> #{class_name}? {\n" +
-    "    let decoder = JSONDecoder()\n" +
-    "    if let jsonData = json.data(using: .utf8),\n" +
-    "       let result = try? decoder.decode(#{class_name}.self, from: jsonData) {\n" +
-    "      return result\n" +
-    "    }\n" +
-    "    return nil\n" +
-    "  }\n"
+    coding_keys = json.map { |key, _| "    case #{key}" }.join("\n")
+
+    json_methods = <<-SWIFT
+    private enum CodingKeys: String, CodingKey {
+    #{coding_keys}
+    }
+
+    func toJson() -> String? {
+      let encoder = JSONEncoder()
+      if let jsonData = try? encoder.encode(self) {
+        return String(data: jsonData, encoding: .utf8)
+      }
+      return nil
+    }
+
+    init(from decoder: Decoder) throws {
+      let container = try decoder.container(keyedBy: CodingKeys.self)
+      #{json.map { |key, value|
+        if value.is_a?(String) && ColorDetector.new(value).color?
+          "self.#{key} = UIColor(hex: try container.decode(String.self, forKey: .#{key}))"
+        else
+          "self.#{key} = try container.decode(#{overriden_value_type(value, key)}.self, forKey: .#{key})"
+        end
+      }.join("\n    ")}
+    }
+
+    func encode(to encoder: Encoder) throws {
+      var container = encoder.container(keyedBy: CodingKeys.self)
+      #{json.map { |key, value|
+        if value.is_a?(String) && ColorDetector.new(value).color?
+          "try container.encode(self.#{key}.toHexString(), forKey: .#{key})"
+        else
+          "try container.encode(self.#{key}, forKey: .#{key})"
+        end
+      }.join("\n    ")}
+    }
+
+    static func fromJson(_ json: String) -> #{class_name}? {
+      let decoder = JSONDecoder()
+      if let jsonData = json.data(using: .utf8),
+         let result = try? decoder.decode(#{class_name}.self, from: jsonData) {
+        return result
+      }
+      return nil
+    }
+    SWIFT
+
+    json_methods
   end
 
   def class_closing
@@ -332,7 +407,9 @@ class SwiftCodeGenerator < BaseCodeGenerator
         "[\n#{indent}  #{array_items}\n#{indent}]"
       end
     when Hash
-      "#{class_prefix[0].upcase}#{class_prefix[1..-1]}.shared"
+      name = "#{class_prefix[0].upcase}#{class_prefix[1..-1]}"
+      overridden_type = @type_overrides[name] || name
+      "#{overridden_type}.shared"
     else
       language_specific_null
     end
@@ -340,7 +417,11 @@ class SwiftCodeGenerator < BaseCodeGenerator
 
   def value_type(value, class_prefix)
     case value
-    when String then 'String'
+    when String
+      if ColorDetector.new(value).color?
+        return color_type
+      end
+      return 'String'
     when Integer then 'Int'
     when Float then 'Double'
     when TrueClass, FalseClass then 'Bool'
@@ -373,6 +454,53 @@ class SwiftCodeGenerator < BaseCodeGenerator
   def language_specific_null
     'nil'
   end
+
+  def language_specific_classes
+    [generate_colors_hex_extension]
+  end
+
+  def generate_colors_hex_extension
+        <<-SWIFT
+        private extension UIColor {
+        convenience init(hex: String) {
+            let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
+            var int: UInt64 = 0
+            Scanner(string: hex).scanHexInt64(&int)
+            let a, r, g, b: UInt64
+            switch hex.count {
+            case 3: // RGB (12-bit)
+                (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
+            case 6: // RGB (24-bit)
+                (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
+            case 8: // ARGB (32-bit)
+                (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
+            default:
+                (a, r, g, b) = (255, 255, 255, 0)
+            }
+
+            self.init(
+                red: CGFloat(r) / 255,
+                green: CGFloat(g) / 255,
+                blue: CGFloat(b) / 255,
+                alpha: CGFloat(a) / 255
+            )
+        }
+
+        func toHexString() -> String {
+            guard let components = self.cgColor.components, components.count >= 3 else {
+                return "#FFFFFF" // Default to white if the color can't be converted
+            }
+
+            let r = Int(components[0] * 255)
+            let g = Int(components[1] * 255)
+            let b = Int(components[2] * 255)
+            let a = components.count > 3 ? Int(components[3] * 255) : 255
+
+            return String(format: "#%02lX%02lX%02lX%02lX", lroundf(Float(a)), lroundf(Float(r)), lroundf(Float(g)), lroundf(Float(b)))
+        }
+    }
+        SWIFT
+    end
 end
 
 class DartCodeGenerator < BaseCodeGenerator
@@ -389,9 +517,15 @@ class DartCodeGenerator < BaseCodeGenerator
     if key == "asJson"
       json_string = json.to_json.gsub('"', '\\"')
       "  final String #{key} = \"#{json_string}\";\n"
+    elsif json[key].is_a?(String) && ColorDetector.new(json[key]).color?
+      "  final Color #{key};\n"
     else
       "  final #{type} #{key};\n"
     end
+  end
+
+  def color_type
+    "Color"
   end
 
   def constructor_parameter(key, type)
@@ -448,7 +582,9 @@ class DartCodeGenerator < BaseCodeGenerator
         "[\n#{indent}  #{array_items}\n#{indent}]"
       end
     when Hash
-      "#{class_prefix[0].upcase}#{class_prefix[1..-1]}.instance"
+      name = "#{class_prefix[0].upcase}#{class_prefix[1..-1]}"
+      overridden_type = @type_overrides[name] || name
+      "#{overridden_type}.instance"
     else
       language_specific_null
     end
@@ -456,7 +592,11 @@ class DartCodeGenerator < BaseCodeGenerator
 
   def value_type(value, class_prefix)
     case value
-    when String then 'String'
+    when String
+      if ColorDetector.new(value).color?
+        return color_type
+      end
+      return 'String'
     when Integer then 'int'
     when Float then 'double'
     when TrueClass, FalseClass then 'bool'
@@ -487,5 +627,36 @@ class DartCodeGenerator < BaseCodeGenerator
 
   def language_specific_null
     'null'
+  end
+end
+
+class ColorDetector
+  attr_accessor :value, :type
+
+  def initialize(value, type = 'string')
+    @value = value
+    @type = type
+  end
+
+  def color?
+    hex_color? || rgb_color? || hsl_color? || named_color?
+  end
+
+  private
+
+  def hex_color?
+    @value.match?(/^#([0-9A-Fa-f]{3}){1,2}$/)
+  end
+
+  def rgb_color?
+    @value.match?(/^rgb(a)?\([\d%,.\s]+\)$/)
+  end
+
+  def hsl_color?
+    @value.match?(/^hsl(a)?\([\d%,.\s]+\)$/)
+  end
+
+  def named_color?
+    %w[red green blue yellow purple orange black white].include?(@value.downcase)
   end
 end
