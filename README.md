@@ -16,7 +16,7 @@
 - **[Infinite Project](https://github.com/Solara-Kit/Infinite)**
 - **[Getting Started](https://github.com/Solara-Kit/Solara/wiki)**
 - **[Brand Management](https://github.com/Solara-Kit/Solara/wiki/Brand-Management)**
-- **[Brand Overview](https://github.com/Solara-Kit/Solara/wiki/Brands-Overview)**
+- **[Brands Overview](https://github.com/Solara-Kit/Solara/wiki/Brands-Overview)**
 - **[Code Signing](https://github.com/Solara-Kit/Solara/wiki/Code-Signing)**
 - **[Advanced Topics](https://github.com/Solara-Kit/Solara/wiki/Advanced-Topics)**
 
@@ -280,7 +280,7 @@ The `solara` directory contains all the essential files required for Solara. Bel
 <br>
 
 > For comprehensive details, check
-> the [Brand Overview](https://github.com/Solara-Kit/Solara/wiki/Brands-Overview).
+> the [Brands Overview](https://github.com/Solara-Kit/Solara/wiki/Brands-Overview) documentation.
 
 The most critical directory is `solara/brand/brands/`, which we will explore in more detail below:
 

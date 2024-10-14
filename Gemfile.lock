@@ -20,6 +20,19 @@ GEM
     plist (3.7.1)
     public_suffix (6.0.1)
     rexml (3.3.8)
+    rspec (3.13.0)
+      rspec-core (~> 3.13.0)
+      rspec-expectations (~> 3.13.0)
+      rspec-mocks (~> 3.13.0)
+    rspec-core (3.13.1)
+      rspec-support (~> 3.13.0)
+    rspec-expectations (3.13.3)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.13.0)
+    rspec-mocks (3.13.1)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.13.0)
+    rspec-support (3.13.1)
     solara (0.2.4)
       cgi (~> 0.4.1)
       colorize (~> 1.1.0)
@@ -47,6 +60,10 @@ PLATFORMS
   x86_64-mingw32
 
 DEPENDENCIES
+<<<<<<< HEAD
+=======
+  rspec (~> 3.13.0)
+>>>>>>> main
   solara (= 0.2.4)
 
 BUNDLED WITH

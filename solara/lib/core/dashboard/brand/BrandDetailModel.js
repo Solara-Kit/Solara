@@ -29,10 +29,10 @@ class BrandDetailModel {
         return await this.localSource.fetchCurrentBrand(this.brandKey);
     }
 
-    async saveSection(sectionItem, configuration) {
+    async saveSection(key, configuration) {
         switch (this.source) {
             case DataSource.LOCAL:
-                return await this.localSource.saveSection(sectionItem, configuration, this.brandKey);
+                return await this.localSource.saveSection(key, configuration, this.brandKey);
             case DataSource.REMOTE:
                 // Saving is not supported remotely. Instead, user can export the brand.
                 return

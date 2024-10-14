@@ -24,27 +24,22 @@ class BrandsController {
             .addEventListener('input', (e) => this.filterBrands(e.target.value));
 
         this.view.brandOptionsSheet.addEventListener('clone', (event) => {
-            console.log('Clone', event.detail);
             this.handleCloneOption(event)
         });
 
         this.view.brandOptionsSheet.addEventListener('offboard', (event) => {
-            console.log('Offboard', event.detail);
             this.handleOffboardOption(event)
         });
 
         this.view.brandOptionsSheet.addEventListener('doctor', (event) => {
-            console.log('Doctor', event.detail);
             this.handleDoctorOption(event)
         });
 
         this.view.brandOptionsSheet.addEventListener('aliases', (event) => {
-            console.log('Aliases', event.detail);
             this.handleAliasesOption(event)
         });
 
         this.view.brandOptionsSheet.addEventListener('settings', (event) => {
-            console.log('Settings', event.detail);
             this.handleSettingsOption(event)
         });
     }
