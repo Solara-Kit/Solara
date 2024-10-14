@@ -60,10 +60,7 @@ PLATFORMS
   x86_64-mingw32
 
 DEPENDENCIES
-<<<<<<< HEAD
-=======
   rspec (~> 3.13.0)
->>>>>>> main
   solara (= 0.2.4)
 
 BUNDLED WITH
