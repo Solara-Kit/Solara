@@ -39,10 +39,10 @@
     },
     "fontSize": {
       "caption": 12,
-      "body2": 14,
       "body1": 16,
-      "subtitle2": 14,
+      "body2": 14,
       "subtitle1": 16,
+      "subtitle2": 14,
       "h6": 20,
       "h5": 24,
       "h4": 34,

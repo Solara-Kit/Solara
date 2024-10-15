@@ -12,7 +12,14 @@ class ThemeGenerator
         language: language,
         parent_class_name: 'BrandTheme',
         type_overrides: {
-          "Colors" => "BrandColors"
+          "BrandThemeColorSchemes" => "ThemeColorSchemes",
+          "BrandThemeTypography" => "ThemeTypography",
+          "BrandThemeSpacing" => "ThemeSpacing",
+          "BrandThemeBorderRadius" => "ThemeBorderRadius",
+          "BrandThemeElevation" => "ThemeElevation",
+          "BrandThemeOpacity" => "ThemeOpacity",
+          "BrandThemeAnimation" => "ThemeAnimation",
+          "BrandThemeBreakpoints" => "ThemeBreakpoints",
         }
     )
     content = config_generator.generate
