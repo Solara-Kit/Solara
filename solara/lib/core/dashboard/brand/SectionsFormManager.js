@@ -163,8 +163,11 @@ class SectionItemManager {
     }
 
     isColorValue(value) {
-        // Check if the value is a valid color
-        return /^#([0-9A-F]{3}){1,2}$/i.test(value);
+        // Check if the value is a valid color (hex with opacity, RGBA, or RGB)
+        const hexPattern = /^#([0-9A-F]{3}){1,2}([0-9A-F]{2})?$/i; // 3, 6, or 8 hex digits
+        const rgbaPattern = /^rgba?\(\s*(\d{1,3}\s*,\s*){2}\d{1,3}\s*,?\s*(0|1|0?\.\d+|1?\.\d+)\s*\)$/;
+
+        return hexPattern.test(value) || rgbaPattern.test(value);
     }
 
     editKey(obj, oldKey) {
