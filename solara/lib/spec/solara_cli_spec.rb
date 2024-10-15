@@ -124,6 +124,48 @@ RSpec.describe Solara do
       end
     end
 
+    describe '#sync' do
+    let(:brands_manager) { instance_double(BrandsManager) }
+
+    before do
+      allow(BrandsManager).to receive(:instance).and_return(brands_manager)
+    end
+
+    context 'when a brand is currently selected' do
+      it 'syncs the changes of the current brand' do
+        current_brand = { 'key' => 'current_key' }
+        expect(brands_manager).to receive(:current_brand).and_return(current_brand)
+        expect(cli).to receive(:check_project_health)
+        expect_any_instance_of(SolaraManager).to receive(:switch).with('current_key')
+
+        cli.sync
+      end
+    end
+
+    context 'when no brand is currently selected' do
+      it 'logs a fatal error and does not sync' do
+        expect(brands_manager).to receive(:current_brand).and_return(nil)
+        expect(cli).to receive(:check_project_health)
+        expect(Solara.logger).to receive(:fatal).with("Please switch a brand first in order to enable synchronization.")
+        expect_any_instance_of(SolaraManager).not_to receive(:switch)
+
+        expect { cli.sync }.to raise_error(SystemExit)
+      end
+    end
+
+    context 'when sync fails' do
+      it 'logs a fatal error and exits' do
+        current_brand = { 'key' => 'fail_key' }
+        expect(brands_manager).to receive(:current_brand).and_return(current_brand)
+        expect(cli).to receive(:check_project_health)
+        expect_any_instance_of(SolaraManager).to receive(:switch).and_raise(Issue.error(''))
+        expect(Solara.logger).to receive(:fatal).with("Switching to fail_key failed.")
+
+        expect { cli.sync }.to raise_error(SystemExit)
+      end
+    end
+  end
+
     describe '#dashboard' do
       it 'opens the dashboard for a brand' do
         allow(cli).to receive(:options).and_return({ 'brand_key' => 'dash_key', 'port' => 8080 })
