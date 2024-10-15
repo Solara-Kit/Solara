@@ -12,14 +12,16 @@ class ThemeGenerator
         language: language,
         parent_class_name: 'BrandTheme',
         type_overrides: {
-          "BrandThemeColorSchemes" => "ThemeColorSchemes",
-          "BrandThemeTypography" => "ThemeTypography",
-          "BrandThemeSpacing" => "ThemeSpacing",
-          "BrandThemeBorderRadius" => "ThemeBorderRadius",
-          "BrandThemeElevation" => "ThemeElevation",
-          "BrandThemeOpacity" => "ThemeOpacity",
-          "BrandThemeAnimation" => "ThemeAnimation",
-          "BrandThemeBreakpoints" => "ThemeBreakpoints",
+          "BrandThemeColorSchemes" => "BrandColorScheme",
+          "BrandThemeTypography" => "BrandTypography",
+          "BrandThemeSpacing" => "BrandSpacing",
+          "BrandThemeBorderRadius" => "BrandBorderRadius",
+          "BrandThemeElevation" => "BrandElevation",
+          "BrandThemeOpacity" => "BrandOpacity",
+          "BrandThemeAnimation" => "BrandAnimation",
+          "BrandThemeBreakpoints" => "BrandBreakpoints",
+          "BrandThemeColorSchemesLight" => "BrandLightColorScheme",
+          "BrandThemeColorSchemesDark" => "BrandDarkColorScheme",
         }
     )
     content = config_generator.generate
