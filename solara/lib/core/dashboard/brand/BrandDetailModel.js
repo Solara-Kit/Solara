@@ -17,6 +17,14 @@ class BrandDetailModel {
         this.source = sourceFromUrl === DataSource.LOCAL ? DataSource.LOCAL : DataSource.REMOTE;
     }
 
+    isLocal() {
+       return  this.source === DataSource.LOCAL
+    }
+
+    isRemote() {
+       return  this.source === DataSource.REMOTE
+    }
+
     getQueryFromUrl(name) {
         return this.localSource.getQueryFromUrl(name);
     }
@@ -48,7 +56,7 @@ class BrandDetailModel {
     async checkBrandHealth() {
         switch (this.source) {
             case DataSource.LOCAL:
-        return await this.localSource.checkBrandHealth(this.brandKey);
+                return await this.localSource.checkBrandHealth(this.brandKey);
             case DataSource.REMOTE:
                 // Checking health is not supported remotely yet.
                 return

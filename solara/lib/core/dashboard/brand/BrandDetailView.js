@@ -23,7 +23,7 @@ class BrandDetailView {
         this.addNewBrandBtn = document.getElementById('newBrandBtn');
         this.exportBrandBtn = document.getElementById('exportBrandBtn');
         this.allBrandsButton = document.getElementById('allBrandsButton');
-
+        this.applyChangesButton = document.getElementById('applyChangesButton');
         this.onboardSheet = document.getElementById('onboardBottomSheet');
         this.sectionsFormManager = new SectionsFormManager();
 
@@ -71,10 +71,10 @@ class BrandDetailView {
         this.confirmationDialog.showDialog(message, onConfirm);
     }
 
-    showApplyChangesButton() {
-        const applyChangesButton = document.getElementById('applyChangesButton');
-        applyChangesButton.style.display = 'block';
-        this.header.style.backgroundColor = '#ff4136';
+    setupApplyChangesButton(color) {
+        this.header.style.backgroundColor = color;
+        this.applyChangesButton.style.backgroundColor = color;
+        this.applyChangesButton.style.display = 'block';
     }
 
     showSwitchButton() {

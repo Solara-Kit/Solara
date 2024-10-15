@@ -92,10 +92,10 @@ class BrandDetailController {
             await this.onLoadSections(response.result);
             const {isCurrentBrand, contentChanged} = await this.model.fetchCurrentBrand();
 
-            if (!isCurrentBrand) {
+            if (isCurrentBrand) {
+                this.view.setupApplyChangesButton(contentChanged ? '#ff4136' : '#4A90E2');
+            } else {
                 this.view.showSwitchButton();
-            } else if (contentChanged) {
-                this.view.showApplyChangesButton();
             }
 
             await this.checkBrandHealth();
@@ -149,25 +149,24 @@ class BrandDetailController {
     }
 
     async onSectionChanged(section, container) {
+        if (this.model.isRemote()) return
+
         try {
             await this.model.saveSection(container.dataset.key, section.content);
-            this.view.showApplyChangesButton();
             await this.checkBrandHealth();
+            await this.switchToBrand(true)
         } catch (error) {
             console.error('Error saving section:', error);
             alert(error.message);
         }
     }
 
-    async switchToBrand() {
+    async switchToBrand(silentError = false) {
         try {
             await this.model.switchToBrand();
-            const applyChangesButton = document.getElementById('applyChangesButton');
-            applyChangesButton.style.display = 'none';
-            location.reload();
         } catch (error) {
             console.error('Error switching to brand:', error);
-            alert(error.message);
+            if (!silentError) alert(error.message);
         }
     }
 
