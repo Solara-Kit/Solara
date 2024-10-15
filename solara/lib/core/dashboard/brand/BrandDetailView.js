@@ -23,7 +23,7 @@ class BrandDetailView {
         this.addNewBrandBtn = document.getElementById('newBrandBtn');
         this.exportBrandBtn = document.getElementById('exportBrandBtn');
         this.allBrandsButton = document.getElementById('allBrandsButton');
-        this.applyChangesButton = document.getElementById('applyChangesButton');
+        this.syncBrandButton = document.getElementById('syncBrandButton');
         this.onboardSheet = document.getElementById('onboardBottomSheet');
         this.sectionsFormManager = new SectionsFormManager();
 
@@ -71,10 +71,10 @@ class BrandDetailView {
         this.confirmationDialog.showDialog(message, onConfirm);
     }
 
-    setupApplyChangesButton(color) {
+    setupSyncBrandButton(color) {
         this.header.style.backgroundColor = color;
-        this.applyChangesButton.style.backgroundColor = color;
-        this.applyChangesButton.style.display = 'block';
+        this.syncBrandButton.style.backgroundColor = color;
+        this.syncBrandButton.style.display = 'block';
     }
 
     showSwitchButton() {
@@ -115,6 +115,17 @@ class BrandDetailView {
     async hideOnboardBrandForm() {
         this.onboardSheet.hide();
     }
+
+    async toast(message) {
+        const toastElement = document.getElementById('toast');
+        toastElement.textContent = message;
+        toastElement.style.display = 'block';
+
+        setTimeout(() => {
+            toastElement.style.display = 'none';
+        }, 3000);
+    }
+
 
 }
 

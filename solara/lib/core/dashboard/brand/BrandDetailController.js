@@ -93,7 +93,7 @@ class BrandDetailController {
             const {isCurrentBrand, contentChanged} = await this.model.fetchCurrentBrand();
 
             if (isCurrentBrand) {
-                this.view.setupApplyChangesButton(contentChanged ? '#ff4136' : '#4A90E2');
+                this.view.setupSyncBrandButton(contentChanged ? '#ff4136' : '#4A90E2');
             } else {
                 this.view.showSwitchButton();
             }
@@ -123,7 +123,12 @@ class BrandDetailController {
             window.location.href = `../brands/brands.html?source=${this.model.source}`;
         });
 
-        document.getElementById('applyChangesButton').addEventListener('click', () => this.switchToBrand());
+        document.getElementById('syncBrandButton').addEventListener(
+            'click',
+            async () => {
+                await this.switchToBrand()
+                await this.view.toast("Synced successfully")
+            });
         document.getElementById('switchButton').addEventListener('click', () => this.switchToBrand());
 
         this.view.exportBrandBtn.addEventListener('click', () => this.exportBrand());

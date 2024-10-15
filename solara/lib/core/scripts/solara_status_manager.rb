@@ -37,7 +37,7 @@ class SolaraStatusManager
         
             solara dashboard -k #{current_brand['key']}
      
-            Then, click the "Apply Changes" button.
+            Then, click the "Sync" button.
         MESSAGE
         Solara.logger.info(message)
     end

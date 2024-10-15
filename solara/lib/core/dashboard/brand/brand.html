@@ -305,7 +305,7 @@
                 transition: background-color 0.3s ease, opacity 0.3s ease;
             }
 
-            .apply-changes-button {
+            .sync-brand-button {
                 width: 100%;
                 background-color: var(--primary-color);
                 color: white;
@@ -314,15 +314,16 @@
                 transition: background-color 0.3s ease, opacity 0.3s ease;
             }
 
-            .action-buttons button:hover {
+            .sync-brand-button:hover {
                 background-color: #3A7BC8;
-            }
-
-            #switchButton {
                 display: none;
             }
 
-            #applyChangesButton {
+            .action-buttons button:hover {
+                color: #fff;
+            }
+
+            #switchButton {
                 display: none;
             }
 
@@ -497,7 +498,7 @@
                 transition: transform 0.3s ease;
             }
 
-              .card {
+            .card {
                 background-color: white;
                 border-radius: 8px;
                 box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -595,12 +596,16 @@
             <img class="loading-overlay-logo" src="../solara.png" alt="Loading Logo">
         </div>
 
+        <div id="toast" style="display: none; position: fixed; top: 10%; left: 50%; transform: translate(-50%, 10%); background-color: #4CAF50; color: white; padding: 16px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);">
+            <!-- Message will be set dynamically -->
+        </div>
+
         <div class="container">
             <div class="row">
 
                 <div class="column left">
                     <div>
-                        <button id="applyChangesButton" class="apply-changes-button">Apply Changes</button>
+                        <button id="syncBrandButton" class="sync-brand-button">Sync</button>
                         <button id="allBrandsButton" class="action-buttons">All Brands</button>
                         <button id="switchButton" class="action-buttons">Switch</button>
                         <button id="exportBrandBtn" class="action-buttons">Export</button>
