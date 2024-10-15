@@ -77,7 +77,7 @@ class SectionItemManager {
             header.onclick = () => {
                 this.editJsonSheet.show(
                     JSON.stringify(this.section.content, null, 2),
-                    key,
+                    cardTitle,
                     (value) => {
                         this.section.content = value
                         this.displayJSONCards()

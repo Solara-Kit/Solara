@@ -7,7 +7,7 @@ class EditJsonSheet extends HTMLElement {
 
         this.sheet = this.shadowRoot.querySelector('#sheet');
         this.overlay = this.shadowRoot.getElementById('overlay');
-        this.title = this.shadowRoot.getElementById('title');
+        this.titleText = this.shadowRoot.getElementById('title');
         this.valueInput = this.shadowRoot.querySelector('#valueInput');
 
         this.shadowRoot.querySelector('#editJsonSheet').onsubmit = (e) => this.handleSubmit(e);
@@ -116,7 +116,7 @@ class EditJsonSheet extends HTMLElement {
     }
 
     show(value, title, onSubmit) {
-        this.title = title
+        this.titleText.textContent = title
         this.onSubmit = onSubmit;
         this.valueInput.value = value;
 
