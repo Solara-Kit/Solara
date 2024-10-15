@@ -139,7 +139,7 @@ class BaseCodeGenerator
 
     content += constructor_declaration(prefixed_class_name, constructor_params)
     content += instance_declaration(prefixed_class_name, json, full_context)
-    content += json_methods(json, prefixed_class_name)
+    content += json_methods(json, prefixed_class_name, full_context)
     content += class_closing
 
     classes << content
@@ -179,7 +179,7 @@ class BaseCodeGenerator
     raise NotImplementedError, "Subclasses must implement instance_declaration"
   end
 
-  def json_methods(json, class_name)
+  def json_methods(json, class_name, context)
     raise NotImplementedError, "Subclasses must implement json_methods"
   end
 
@@ -253,7 +253,7 @@ class KotlinCodeGenerator < BaseCodeGenerator
     "  companion object {\n    val instance = #{class_name}(\n#{json.map { |k, v| "      #{k} = #{value_for(v, k, '      ', context)}" }.join(",\n")}\n    )\n  }\n"
   end
 
-  def json_methods(json, class_name)
+  def json_methods(json, class_name, context)
     ""
   end
 
@@ -371,13 +371,13 @@ class SwiftCodeGenerator < BaseCodeGenerator
   end
 
   def instance_declaration(class_name, json, context)
-    "  static let instance = #{class_name}(\n" +
+    "  static let shared = #{class_name}(\n" +
     json.map { |k, v| "    #{k}: #{value_for(v, k, '    ', context)}" }.join(",\n") +
     "\n  )\n\n"
   end
 
-  def json_methods(json, class_name)
-    prefixed_class_name = @class_registry.get(class_name)
+  def json_methods(json, class_name, context)
+    prefixed_class_name = @class_registry.get(capitalize(class_name))
     coding_keys = json.map { |key, _| "    case #{key}" }.join("\n")
 
     <<-SWIFT
@@ -399,7 +399,7 @@ class SwiftCodeGenerator < BaseCodeGenerator
       if value.is_a?(String) && ColorDetector.new(value).color?
         "self.#{key} = UIColor(hex: try container.decode(String.self, forKey: .#{key}))"
       else
-        "self.#{key} = try container.decode(#{value_type(value, key)}.self, forKey: .#{key})"
+        "self.#{key} = try container.decode(#{value_type(value, key, context)}.self, forKey: .#{key})"
       end
     }.join("\n    ")}
   }
@@ -407,10 +407,10 @@ class SwiftCodeGenerator < BaseCodeGenerator
   func encode(to encoder: Encoder) throws {
     var container = encoder.container(keyedBy: CodingKeys.self)
     #{json.map { |key, value|
-      if value.is_a?(String) && ColorDetector.new(value).color?
-        "try container.encode(self.#{key}.toHexString(), forKey: .#{key})"
+     if value.is_a?(String) && ColorDetector.new(value).color?
+        "try container.encode(#{key}.toHexString(), forKey: .#{key})"
       else
-        "try container.encode(self.#{key}, forKey: .#{key})"
+        "try container.encode(#{key}, forKey: .#{key})"
       end
     }.join("\n    ")}
   }
@@ -456,7 +456,7 @@ class SwiftCodeGenerator < BaseCodeGenerator
         "[\n#{indent}  #{array_items}\n#{indent}]"
       end
     when Hash
-      "#{@class_registry.get(capitalize(class_prefix), context)}.instance"
+      "#{@class_registry.get(capitalize(class_prefix), context)}.shared"
     else
       language_specific_null
     end
@@ -504,7 +504,7 @@ class SwiftCodeGenerator < BaseCodeGenerator
   def language_specific_classes
     [
       <<-SWIFT
-extension UIColor {
+private extension UIColor {
     convenience init(hex: String) {
         let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
         var int = UInt64()
@@ -580,7 +580,7 @@ class DartCodeGenerator < BaseCodeGenerator
     "\n  );\n\n"
   end
 
-  def json_methods(json, class_name)
+  def json_methods(json, class_name, context)
     prefixed_class_name = @class_registry.get(class_name)
     from_json_content = json.map do |key, value|
       if value.is_a?(String) && ColorDetector.new(value).color?
@@ -709,6 +709,7 @@ class ColorDetector
   end
 
   def color?
-    @value.is_a?(String) && @value.match?(/^#[0-9A-Fa-f]{6}$/)
+    # Check for 6-character (RGB) or 8-character (RGBA) hex color formats
+    @value.is_a?(String) && @value.match?(/^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/)
   end
 end
