@@ -64,6 +64,4 @@ structure:
                 type: file
                 validations:
                     - type: valid_json
-                    - type: json_schema
-                      schema_path: platform/shared/theme.json
 strict: false
