@@ -13,6 +13,7 @@ GEM
     claide (1.1.0)
     colored2 (3.1.2)
     colorize (1.1.0)
+    diff-lcs (1.5.1)
     json-schema (4.3.1)
       addressable (>= 2.8)
     nanaimo (0.3.0)
@@ -52,12 +53,7 @@ GEM
       rexml (>= 3.3.6, < 4.0)
 
 PLATFORMS
-  arm64-darwin-22
-  x64-mingw-ucrt
-  x64-mingw32
   x86_64-darwin-23
-  x86_64-linux
-  x86_64-mingw32
 
 DEPENDENCIES
   rspec (~> 3.13.0)

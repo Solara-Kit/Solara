@@ -1,7 +1,7 @@
 require 'json'
 require 'fileutils'
 
-class ThemeGeneratorManager
+class ThemeGenerator
     def initialize(input_path)
         @input_path = input_path
     end

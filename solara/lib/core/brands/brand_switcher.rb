@@ -225,7 +225,7 @@ class ThemeSwitcher
   def generate_theme(name, language, platform)
     Solara.logger.start_step("Generate #{name} for #{platform}")
 
-    theme_manager = ThemeGeneratorManager.new(FilePath.brand_theme(@brand_key))
+    theme_manager = ThemeGenerator.new(FilePath.brand_theme(@brand_key))
     theme_manager.generate(language, FilePath.generated_config(name, platform))
 
     Solara.logger.end_step("Generate #{name} for #{platform}")
