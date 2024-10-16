@@ -42,6 +42,16 @@ class BrandSwitcher
     else
       raise ArgumentError, "Invalid platform: #{@platform}"
     end
+
+    copy_resources
+  end
+
+  def copy_resources
+    Solara.logger.start_step("Copy ressources in #{FilePath.brand_resources_manifest}")
+    brand_resource_copier = BrandResourceCopier.new(@brand_key)
+    brand_resource_copier.copy
+    Solara.logger.debug("#{@brand_key} resources copied successfully according to the manifest: #{FilePath.brand_resources_manifest}.")
+    Solara.logger.end_step("Copy ressources in #{FilePath.brand_resources_manifest}")
   end
 end
 

@@ -4,7 +4,7 @@ class GitignoreManager
         create_gitignore_if_not_exists
     end
 
-    def self.ignore
+    def self.ignore_common_files
         Solara.logger.start_step("Exclude Brand-Generated Files and Folders from Git")
 
         items = [
@@ -29,7 +29,7 @@ class GitignoreManager
         
     def add_items(items)
         items.each do |item|
-            add_item(item)
+            add_item(FileManager.get_relative_path_to_root(item))
         end
     end
 
@@ -39,7 +39,15 @@ class GitignoreManager
         if existing_items.include?(item)
             Solara.logger.debug("'#{item}' already exists in .gitignore")
         else
-            File.open(@gitignore_path, 'a') do |file|
+            File.open(@gitignore_path, 'a+') do |file|
+                # Move the file pointer to the beginning to check the last character
+                file.seek(0, IO::SEEK_END)
+                if file.size > 0
+                    # Only add a new line if the last character is not a newline
+                    file.seek(-1, IO::SEEK_END)
+                    last_char = file.getc
+                    file.puts if last_char != "\n"
+                end
                 file.puts(item)
             end
             Solara.logger.debug("Added '#{item}' to .gitignore")

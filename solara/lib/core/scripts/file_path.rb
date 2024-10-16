@@ -116,7 +116,15 @@ module FilePath
     end
 
     def self.brand_fonts
-        File.join(solara_brand, 'global', 'fonts')
+        File.join(global, 'fonts')
+    end
+
+    def self.brand_resources_manifest
+        File.join(global, 'brand_resources_manifest.json')
+    end
+
+    def self.global
+        File.join(solara_brand, 'global')
     end
 
     def self.brand_config(brand_key)

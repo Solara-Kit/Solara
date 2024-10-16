@@ -59,6 +59,11 @@
             "source": "shared/brand_config.json",
             "target": "shared/brand_config.json",
             "condition": "true"
+        },
+        {
+            "source": "global/brand_resources_manifest.json",
+            "target": "../../global/brand_resources_manifest.json",
+            "condition": "true"
         }
     ],
     "variables": {

@@ -1,0 +1,10 @@
+{
+    "description": "This file outlines the resources to be transferred from the brand source to the codebase during the switching process.",
+    "files": [
+        {
+            "source": "",
+            "destination": "",
+            "mandatory": true
+        }
+    ]
+}

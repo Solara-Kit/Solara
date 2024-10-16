@@ -7,7 +7,7 @@ class SolaraConfigurator
     end
 
     def start
-        GitignoreManager.ignore
+        GitignoreManager.ignore_common_files
         AliasManager.new.start
     end
 

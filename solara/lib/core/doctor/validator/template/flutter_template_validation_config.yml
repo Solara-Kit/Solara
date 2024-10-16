@@ -64,4 +64,13 @@ structure:
                 type: file
                 validations:
                     - type: valid_json
+    ../../global:
+        type: directory
+        contents:
+            brand_resources_manifest.json:
+                type: file
+                validations:
+                    - type: valid_json
+                    - type: json_schema
+                      schema_path: platform/global/brand_resources_manifest.json
 strict: false

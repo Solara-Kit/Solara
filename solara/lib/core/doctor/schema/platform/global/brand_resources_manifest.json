@@ -1,0 +1,30 @@
+{
+    "type": "object",
+    "properties": {
+        "files": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "source": {
+                        "type": "string"
+                    },
+                    "destination": {
+                        "type": "string"
+                    },
+                    "mandatory": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "source",
+                    "destination",
+                    "mandatory"
+                ]
+            }
+        }
+    },
+    "required": [
+        "files"
+    ]
+}
