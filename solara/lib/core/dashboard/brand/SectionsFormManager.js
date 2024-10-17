@@ -74,18 +74,20 @@ class SectionItemManager {
         const header = document.createElement('div');
         header.className = 'card-header';
         header.textContent = key === 'root' ? cardTitle : key;
-        if (key === 'root') {
-            header.onclick = () => {
-                this.editJsonSheet.show(
-                    JSON.stringify(this.section.content, null, 2),
-                    cardTitle,
-                    (value) => {
-                        this.section.content = value
-                        this.displayJSONCards()
-                        this.notifyChange()
-                    })
-            };
-        }
+        header.onclick = () => {
+            if (key !== 'root') {
+                this.editKey(parent, key)
+                return
+            }
+            this.editJsonSheet.show(
+                JSON.stringify(this.section.content, null, 2),
+                cardTitle,
+                (value) => {
+                    this.section.content = value
+                    this.displayJSONCards()
+                    this.notifyChange()
+                })
+        };
 
         const actions = document.createElement('div');
         actions.className = 'card-actions';
