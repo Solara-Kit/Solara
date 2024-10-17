@@ -295,6 +295,10 @@ module FilePath
         File.join(root, 'core', 'template')
     end
 
+    def self.brand_configurations
+        File.join(solara_template, 'configurations.json')
+    end
+
     def self.solara_aliases_json
         File.join(dot_solara, 'aliases', 'aliases.json')
     end

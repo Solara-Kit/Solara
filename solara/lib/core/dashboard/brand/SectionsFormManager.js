@@ -25,7 +25,6 @@ class SectionsFormManager {
 
         sectionElement.dataset.key = section.key
         sectionElement.dataset.name = section.name
-        sectionElement.dataset.inputType = section.inputType
 
         const titleContainer = document.createElement('div');
         titleContainer.className = 'section-title-container';

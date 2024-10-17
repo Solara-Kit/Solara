@@ -1,0 +1,40 @@
+{
+    "configurations": [
+        {
+            "key": "brand_config.json",
+            "name": "Brand Configuration",
+            "filePath": "shared/brand_config.json",
+            "url": "https://raw.githubusercontent.com/Solara-Kit/Solara/refs/heads/develop/solara/lib/core/template/brands/shared/brand_config.json"
+        },
+        {
+            "key": "theme.json",
+            "name": "Theme Configuration",
+            "filePath": "shared/theme.json",
+            "url": "https://raw.githubusercontent.com/Solara-Kit/Solara/refs/heads/develop/solara/lib/core/template/brands/shared/theme.json"
+        },
+        {
+            "key": "android_config.json",
+            "name": "Android Configuration",
+            "filePath": "android/android_config.json",
+            "url": "https://raw.githubusercontent.com/Solara-Kit/Solara/refs/heads/develop/solara/lib/core/template/brands/android/android_config.json"
+        },
+        {
+            "key": "android_signing.json",
+            "name": "Android Signing",
+            "filePath": "android/android_signing.json",
+            "url": "https://raw.githubusercontent.com/Solara-Kit/Solara/refs/heads/develop/solara/lib/core/template/brands/android/android_signing.json"
+        },
+        {
+            "key": "ios_config.json",
+            "name": "iOS Configuration",
+            "filePath": "ios/ios_config.json",
+            "url": "https://raw.githubusercontent.com/Solara-Kit/Solara/refs/heads/develop/solara/lib/core/template/brands/ios/ios_config.json"
+        },
+        {
+            "key": "ios_signing.json",
+            "name": "iOS Signing",
+            "filePath": "ios/ios_signing.json",
+            "url": "https://raw.githubusercontent.com/Solara-Kit/Solara/refs/heads/develop/solara/lib/core/template/brands/ios/ios_signing.json"
+        }
+    ]
+}

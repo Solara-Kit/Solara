@@ -75,7 +75,7 @@ class BrandDetailController {
 
     async addNewBrand() {
         this.view.showOnboardBrandForm(async (key, name) => {
-            const configurations = await this.model.createNewBrandConfogurations()
+            const configurations = await this.model.createNewBrandConfigurations()
             await this.addBrand(key, name, configurations)
         })
     }

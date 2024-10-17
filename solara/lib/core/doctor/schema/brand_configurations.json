@@ -31,13 +31,6 @@
                     "name": {
                         "type": "string"
                     },
-                    "inputType": {
-                        "type": "string",
-                        "enum": [
-                            "color",
-                            "text"
-                        ]
-                    },
                     "content": {
                         "type": "object",
                         "additionalProperties": {}
@@ -46,7 +39,6 @@
                 "required": [
                     "key",
                     "name",
-                    "inputType",
                     "content"
                 ]
             }

@@ -65,8 +65,8 @@ class BrandDetailModel {
         }
     }
 
-    async createNewBrandConfogurations() {
-        return await this.remoteSource.createNewBrandConfogurations();
+    async createNewBrandConfigurations() {
+        return await this.remoteSource.createNewBrandConfigurations();
     }
 
     async createBrandConfigurationsFromDirectory(dirHandle) {
