@@ -109,7 +109,7 @@ class OnboardBrandBottomSheet extends HTMLElement {
             transition: background-color 0.3s ease;
         }
         .onboard-brand-button:hover {
-            background-color: #3a7bc8;
+            background-color: var(--hover);
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">

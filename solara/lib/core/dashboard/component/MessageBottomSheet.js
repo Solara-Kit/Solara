@@ -10,7 +10,7 @@ class MessageBottomSheet extends HTMLElement {
         bottom: 0;
         left: 0;
         right: 0;
-        background-color: white;
+        background-color: var(--background-color);
         border-top-left-radius: 14px;
         border-top-right-radius: 14px;
         box-shadow: 0 -1.4px 7px rgba(0, 0, 0, 0.1);
@@ -18,7 +18,7 @@ class MessageBottomSheet extends HTMLElement {
         padding: 14px;
         transition: transform 0.3s ease-out;
         transform: translateY(100%);
-        max-width: 700px;
+        max-width: 60%;
         margin: 0 auto;
         width: 100%;
     }
@@ -26,7 +26,7 @@ class MessageBottomSheet extends HTMLElement {
         transform: translateY(0);
     }
     .message-content {
-        max-height: 210px; /* Reduced from 300px */
+        max-height: 50%;
         overflow-y: auto;
         margin-bottom: 14px;
     }
@@ -42,7 +42,7 @@ class MessageBottomSheet extends HTMLElement {
         font-size: 11.2px;
     }
     .close-message:hover {
-        background-color: #0056b3;
+        background-color: var(--hover);
     }
 </style>
 <div class="message-bottom-sheet" id="messageBottomSheet">
@@ -55,7 +55,7 @@ class MessageBottomSheet extends HTMLElement {
         this.messageBottomSheet = this.shadowRoot.getElementById('messageBottomSheet');
         this.messageContent = this.shadowRoot.getElementById('messageContent');
         this.closeMessageButton = this.shadowRoot.getElementById('closeMessage');
-            this.overlay = this.shadowRoot.getElementById('overlay');
+        this.overlay = this.shadowRoot.getElementById('overlay');
 
         this.closeMessageButton.onclick = () => this.hideMessage();
         this.overlay.onclick = () => this.hideMessage();

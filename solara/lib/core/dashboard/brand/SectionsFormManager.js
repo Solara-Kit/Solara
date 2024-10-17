@@ -31,6 +31,7 @@ class SectionsFormManager {
         titleContainer.className = 'section-title-container';
 
         const title = document.createElement('h2');
+        title.className = "section-title";
         title.textContent = section.name;
         titleContainer.appendChild(title);
 
@@ -99,7 +100,7 @@ class SectionItemManager {
             const deleteCardBtn = document.createElement('button');
             deleteCardBtn.className = 'delete-btn';
             deleteCardBtn.innerHTML = '<i class="fas fa-times"></i>';
-            deleteCardBtn.onclick = () => this.deleteProperty(parent, key);
+            deleteCardBtn.onclick = () => this.confirmDeleteProperty(parent, key);
             actions.appendChild(deleteCardBtn);
         }
 
@@ -151,7 +152,7 @@ class SectionItemManager {
                 const deleteBtn = document.createElement('button');
                 deleteBtn.className = 'delete-btn';
                 deleteBtn.innerHTML = '<i class="fas fa-times"></i>';
-                deleteBtn.onclick = () => this.deleteProperty(obj, k);
+                deleteBtn.onclick = () => this.confirmDeleteProperty(obj, k);
                 cardValueContainer.appendChild(deleteBtn);
             }
 
@@ -188,6 +189,14 @@ class SectionItemManager {
         }
         this.displayJSONCards();
         this.notifyChange()
+    }
+
+    confirmDeleteProperty(obj, key) {
+        const confirmationDialog = document.getElementById('confirmationDialog');
+        confirmationDialog.showDialog(`Are you sure you need to delete: ${key}?`,
+            async () => {
+                this.deleteProperty(obj, key)
+            });
     }
 
     deleteProperty(obj, key) {

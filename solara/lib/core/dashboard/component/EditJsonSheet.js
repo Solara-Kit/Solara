@@ -24,7 +24,7 @@ class EditJsonSheet extends HTMLElement {
         bottom: -100%;
         left: 0;
         right: 0;
-        background-color: white;
+        background-color: var(--background-color);
         padding: 21px;
         box-shadow: 0 -3.5px 14px rgba(0, 0, 0, 0.2);
         transition: bottom 0.3s ease-out;
@@ -59,6 +59,9 @@ class EditJsonSheet extends HTMLElement {
     .show {
         display: block;
     }
+    .sheet-title {
+        color: var(--text-color);
+    }
     .form-group {
         max-width: 98%;
         margin-bottom: 14px;
@@ -83,6 +86,9 @@ class EditJsonSheet extends HTMLElement {
         resize: vertical; /* Allow vertical resizing */
         font-family: monospace;
         flex-grow: 1; /* Allow textarea to grow */
+        background-color: var(--background-color);
+        color: var(--text-color);
+        border: 1px solid var(--border-color);
     }
     .submit-button {
         min-width: 30%;
@@ -98,13 +104,13 @@ class EditJsonSheet extends HTMLElement {
         transition: background-color 0.3s ease;
     }
     .submit-button:hover {
-        background-color: #3A7BC8;
+        background-color: var(--hover);
     }
 </style>
 
 <div id="overlay" class="overlay"></div>
 <div class="bottom-sheet" id="sheet">
-    <h3 id="title"></h3>
+    <h2 class="sheet-title" id="title"></h2>
     <form id="editJsonSheet">
         <div class="form-group">
             <textarea id="valueInput" name="valueInput" placeholder='Enter a value' required></textarea>

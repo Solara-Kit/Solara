@@ -72,8 +72,6 @@ class BrandDetailView {
     }
 
     setupSyncBrandButton(color) {
-        this.header.style.backgroundColor = color;
-        this.syncBrandButton.style.backgroundColor = color;
         this.syncBrandButton.style.display = 'block';
     }
 
