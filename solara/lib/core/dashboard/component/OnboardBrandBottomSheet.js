@@ -30,7 +30,7 @@ class OnboardBrandBottomSheet extends HTMLElement {
             bottom: 0;
             left: 0;
             right: 0;
-            background-color: white;
+            background-color: var(--background-color);
             border-top-left-radius: 14px;
             border-top-right-radius: 14px;
             box-shadow: 0 -1.4px 7px rgba(0, 0, 0, 0.1);
@@ -71,6 +71,7 @@ class OnboardBrandBottomSheet extends HTMLElement {
             border: 0.7px solid var(--border-color, #E1E4E8);
             border-radius: 3.5px;
             font-size: 11.2px;
+            background-color: var(--background-color);
         }
         .tooltip {
             position: relative;
@@ -107,6 +108,7 @@ class OnboardBrandBottomSheet extends HTMLElement {
             cursor: pointer;
             font-size: 11.2px;
             transition: background-color 0.3s ease;
+            margin-top: 30px;
         }
         .onboard-brand-button:hover {
             background-color: var(--hover);
@@ -117,7 +119,7 @@ class OnboardBrandBottomSheet extends HTMLElement {
 <div>
     <div class="overlay" id="overlay"></div>
     <div class="bottom-sheet" id="onboardBrandSheet">
-        <h3 id="sheetTitle">Onboard New Brand</h3>
+        <h2 id="sheetTitle">Onboard New Brand</h2>
         <form class="onboard-brand-form" id="onboardBrandForm">
             <div class="form-group">
                 <label for="brandKey">
