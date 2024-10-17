@@ -35,6 +35,12 @@
             "name": "iOS Signing",
             "filePath": "ios/ios_signing.json",
             "url": "https://raw.githubusercontent.com/Solara-Kit/Solara/refs/heads/develop/solara/lib/core/template/brands/ios/ios_signing.json"
+        },
+        {
+            "key": "InfoPlist.xcstrings",
+            "name": "InfoPlist.xcstrings",
+            "filePath": "ios/InfoPlist.xcstrings",
+            "url": "https://raw.githubusercontent.com/Solara-Kit/Solara/refs/heads/develop/solara/lib/core/template/brands/ios/InfoPlist.xcstrings"
         }
     ]
 }

@@ -2,12 +2,22 @@ require 'json'
 
 module StringCatalogUtils
   def load_string_catalog(path)
+    @path = path
     JSON.parse(File.read(path))
   end
 
   def get_value(data, key, target, language)
     lang = language || data['sourceLanguage']
-    data['strings'][key]['localizations'][lang]['stringUnit'][target]
+    localizations = data.dig('strings', key, 'localizations', lang)
+
+    unless localizations && localizations['stringUnit']
+      error_message = "The default language is #{lang}, but no localizations are available for key '#{key}'. Please address this issue in {@path}. You can easily open the file in Xcode to make the necessary adjustments."
+      Solara.logger.fatal(error_message)
+      exit 1
+    end
+
+    string_unit = localizations['stringUnit']
+    string_unit[target]
   end
 
   def has_value?(data, key, language)
