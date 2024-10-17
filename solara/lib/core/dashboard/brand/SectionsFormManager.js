@@ -113,7 +113,6 @@ class SectionItemManager {
 
         for (const [k, v] of Object.entries(obj)) {
             const item = document.createElement('div');
-            item.className = 'card-item';
 
             const cardValueContainer = document.createElement('div');
             cardValueContainer.className = 'card-value-container';
@@ -131,12 +130,13 @@ class SectionItemManager {
                 item.appendChild(this.createCard(v, k, obj, null));
                 itemKey.textContent = isArray ? `${key}[${k}]` : ''
             } else {
+                item.className = 'card-item';
                 itemKey.textContent = k.replace(/_/g, ' ')
 
                 if (this.isColorValue(v)) {
                     const itemValue = document.createElement('input');
                     itemValue.type = 'color';
-                    itemValue.className = 'card-value color-picker';
+                    itemValue.className = 'card-value';
                     itemValue.value = v;
                     itemValue.onchange = () => this.updateValue(obj, k, itemValue.value);
                     cardValueContainer.appendChild(itemValue);
