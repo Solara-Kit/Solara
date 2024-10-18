@@ -11,7 +11,7 @@ class ThemeGenerator
         json: JSON.parse(File.read(@input_path)),
         language: language,
         parent_class_name: 'BrandTheme',
-        type_overrides: {
+        custom_types: {
           "BrandThemeColorSchemes" => "BrandColorScheme",
           "BrandThemeTypography" => "BrandTypography",
           "BrandThemeSpacing" => "BrandSpacing",

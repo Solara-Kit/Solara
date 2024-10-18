@@ -61,8 +61,53 @@
             "condition": "true"
         },
         {
-            "source": "global/brand_resources_manifest.json",
-            "target": "../../global/brand_resources_manifest.json",
+            "source": "json/",
+            "target": "android/json/",
+            "condition": "true"
+        },
+        {
+            "source": "json/",
+            "target": "ios/json/",
+            "condition": "true"
+        },
+        {
+            "source": "json/json_manifest.json",
+            "target": "android/json/",
+            "condition": "true"
+        },
+        {
+            "source": "json/json_manifest.json",
+            "target": "ios/json/",
+            "condition": "true"
+        },
+        {
+            "source": "json/Json-Manifest.md",
+            "target": "android/json/",
+            "condition": "true"
+        },
+        {
+            "source": "json/Json-Manifest.md",
+            "target": "ios/json/",
+            "condition": "true"
+        },
+        {
+            "source": "json/",
+            "target": "../../global/json",
+            "condition": "true"
+        },
+        {
+            "source": "json/json_manifest.json",
+            "target": "../../global/json",
+            "condition": "true"
+        },
+        {
+            "source": "json/Json-Manifest.md",
+            "target": "../../global/json",
+            "condition": "true"
+        },
+        {
+            "source": "global/resources_manifest.json",
+            "target": "../../global/resources_manifest.json",
             "condition": "true"
         }
     ],

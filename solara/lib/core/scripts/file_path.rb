@@ -99,6 +99,14 @@ module FilePath
         File.join(brands, brand_key)
     end
 
+    def self.brand_json_dir(brand_key, platform = nil)
+        File.join(brand(brand_key), platform || SolaraSettingsManager.instance.platform, 'json')
+    end
+
+    def self.brand_global_json_dir
+        File.join(global, 'json')
+    end
+
     def self.android_config(brand_key)
         File.join(android_brand_root(brand_key), 'android_config.json')
     end
@@ -119,8 +127,8 @@ module FilePath
         File.join(global, 'fonts')
     end
 
-    def self.brand_resources_manifest
-        File.join(global, 'brand_resources_manifest.json')
+    def self.resources_manifest
+        File.join(global, 'resources_manifest.json')
     end
 
     def self.global

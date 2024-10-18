@@ -1,10 +1,10 @@
 require 'json'
 require 'fileutils'
 
-class BrandResourceCopier
+class ResourceManifestProcessor
   def initialize(brand_key)
     @brand_key = brand_key
-    @manifest_file = FilePath.brand_resources_manifest
+    @manifest_file = FilePath.resources_manifest
     @config = load_manifest_file
   end
 
@@ -106,7 +106,7 @@ class BrandResourceCopier
 
   def check_mandatory_file(item, src, dst)
     if item['mandatory'] && !File.exist?(src)
-      Solara.logger.fatal("Mandatory resource file/folder not found for #{@brand_key}: #{src}. Please add the resource or mark it as not mandatory in #{FilePath.brand_resources_manifest}.")
+      Solara.logger.fatal("Mandatory resource file/folder not found for #{@brand_key}: #{src}. Please add the resource or mark it as not mandatory in #{FilePath.resources_manifest}.")
       exit 1
     end
 

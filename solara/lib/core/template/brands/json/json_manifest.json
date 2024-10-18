@@ -1,0 +1,18 @@
+{
+    "description": "This file specifies the JSON files that can be optionally generated for the target platform code.",
+    "files": [
+        {
+            "fileName": "",
+            "generate": {
+                "enabled": true,
+                "className": "",
+                "customClassNames": [
+                    {
+                        "generatedName": "",
+                        "customName": ""
+                    }
+                ]
+            }
+        }
+    ]
+}

@@ -17,8 +17,8 @@ module Language
 end
 
 class ClassNameRegistry
-  def initialize(type_overrides)
-    @type_overrides = type_overrides
+  def initialize(custom_types)
+    @custom_types = custom_types
     @registry = {}
   end
 
@@ -30,7 +30,7 @@ class ClassNameRegistry
   def get(name, context = [])
     full_context = (context + [name]).join('.')
     result = @registry[full_context] || name
-    @type_overrides[result] || result
+    @custom_types[result] || result
   end
 
   def original_names
@@ -47,12 +47,12 @@ class CodeGenerator
     json:,
     language:,
     parent_class_name:,
-    type_overrides: {}
+    custom_types: {}
   )
     @json = json
     @language = language
     @parent_class_name = parent_class_name
-    @type_overrides = type_overrides
+    @custom_types = custom_types
     @generator = create_language_generator
   end
 
@@ -65,11 +65,11 @@ class CodeGenerator
   def create_language_generator
     case @language
     when Language::Kotlin
-      KotlinCodeGenerator.new(@json, @parent_class_name, @type_overrides)
+      KotlinCodeGenerator.new(@json, @parent_class_name, @custom_types)
     when Language::Swift
-      SwiftCodeGenerator.new(@json, @parent_class_name, @type_overrides)
+      SwiftCodeGenerator.new(@json, @parent_class_name, @custom_types)
     when Language::Dart
-      DartCodeGenerator.new(@json, @parent_class_name, @type_overrides)
+      DartCodeGenerator.new(@json, @parent_class_name, @custom_types)
     else
       raise ArgumentError, "Unsupported language: #{@language}"
     end
@@ -77,11 +77,11 @@ class CodeGenerator
 end
 
 class BaseCodeGenerator
-  def initialize(json, parent_class_name, type_overrides)
+  def initialize(json, parent_class_name, custom_types)
     @parent_class_name = parent_class_name
     @json = json
-    @type_overrides = type_overrides
-    @class_registry = ClassNameRegistry.new(type_overrides)
+    @custom_types = custom_types
+    @class_registry = ClassNameRegistry.new(custom_types)
     register_class_names(@parent_class_name, @json)
   end
 
