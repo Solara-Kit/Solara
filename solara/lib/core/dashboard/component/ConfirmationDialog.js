@@ -7,25 +7,29 @@ class ConfirmationDialog extends HTMLElement {
 
     render() {
         this.shadowRoot.innerHTML = `
-           <style>
+    <style>
+    .title {
+        color: var(--text-color);
+        font-size: 14px;
+    }
     .confirmation-dialog {
         display: none;
         position: fixed;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        background-color: white;
-        padding: 14px;
+        background-color: var(--background-color);
         border-radius: 7px;
         box-shadow: 0 2.8px 4.2px rgba(0, 0, 0, 0.1);
         z-index: 1001;
         text-align: center;
-        font-size: 11.2px;
+        font-size: 11px;
+        padding: 20px;
     }
     .confirmation-dialog h3 {
         margin-top: 0;
         color: var(--primary-color);
-        font-size: 15.4px;
+        font-size: 15px;
     }
     .confirmation-dialog .buttons {
         margin-top: 14px;
@@ -42,16 +46,18 @@ class ConfirmationDialog extends HTMLElement {
     .confirmation-dialog .confirm {
         background-color: #dc3545;
         color: white;
+        margin-top: 10px;
     }
     .confirmation-dialog .cancel {
         background-color: #ccc;
         color: #333;
-    }
+        margin-top: 10px;
+     }
     .confirmation-dialog .confirm:hover {
-        background-color: #c82333;
+        background-color: var(--hover);
     }
     .confirmation-dialog .cancel:hover {
-        background-color: #bbb;
+        background-color: var(--hover);
     }
     .overlay {
         display: none;
@@ -66,8 +72,7 @@ class ConfirmationDialog extends HTMLElement {
 </style>
 <div class="overlay" id="overlay"></div>
 <div class="confirmation-dialog" id="confirmationDialog">
-    <h3>Confirm Action</h3>
-    <p id="confirmationMessage"></p>
+    <h2 class="title" id="confirmationMessage"></h2>
     <div class="buttons">
         <button class="confirm" id="confirmButton">Confirm</button>
         <button class="cancel" id="cancelButton">Cancel</button>

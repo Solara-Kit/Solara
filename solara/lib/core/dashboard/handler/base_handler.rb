@@ -15,6 +15,7 @@ class BaseHandler
         res.status = status
         res.body = JSON.generate({ success: false, error: "#{message}: #{error.message}" })
         res.content_type = 'application/json'
+        Solara.logger.error(error)
     end
 
     def method_not_allowed(res)

@@ -153,6 +153,25 @@ module Solara
 
         end
 
+        desc "`sync", "Sync the changes of the current brand through switching."
+        def sync
+            check_project_health
+
+            current_brand = BrandsManager.instance.current_brand
+            unless current_brand
+                Solara.logger.fatal("Please switch a brand first in order to enable synchronization.")
+                exit 1
+            end
+            brand_key = current_brand['key']
+
+            begin
+                SolaraManager.new.switch(brand_key)
+            rescue Issue => e
+                Solara.logger.fatal("Switching to #{brand_key} failed.")
+                exit 1
+            end
+        end
+
         desc "dashboard -k YOUR_OPTIONAL_BRAND_KEY", "Open the dashboard for a brand if brank_key is provided."
         method_option :brand_key, :type => :string, :aliases => "-k"
         method_option :port, :type => :numeric, :aliases => "-p"

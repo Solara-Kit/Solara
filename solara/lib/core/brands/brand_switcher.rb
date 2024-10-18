@@ -30,6 +30,9 @@ class BrandSwitcher
   def switch
     BrandFontSwitcher.new(@brand_key).switch
     
+    ResourceManifestSwitcher.new(@brand_key).switch
+    JsonManifestSwitcher.new(@brand_key).switch
+
     case @platform
     when Platform::Flutter
       IOSBrandSwitcher.new(@brand_key).switch
@@ -42,6 +45,60 @@ class BrandSwitcher
     else
       raise ArgumentError, "Invalid platform: #{@platform}"
     end
+
+  end
+
+end
+
+class ResourceManifestSwitcher
+  def initialize(brand_key)
+    @brand_key = brand_key
+  end
+
+  def switch
+    Solara.logger.start_step("Process resource manifest: #{FilePath.resources_manifest}")
+    brand_resource_copier = ResourceManifestProcessor.new(@brand_key)
+    brand_resource_copier.copy
+    Solara.logger.debug("#{@brand_key} resources copied successfully according to the manifest: #{FilePath.resources_manifest}.")
+    Solara.logger.end_step("Process resource manifest: #{FilePath.resources_manifest}")
+  end
+
+end
+
+class JsonManifestSwitcher
+  def initialize(brand_key)
+    @brand_key = brand_key
+    @manifest_path = FilePath.brand_json_dir(brand_key)
+  end
+
+  def switch
+    Solara.logger.start_step("Process JSON manifest: #{@manifest_path}")
+
+
+    case SolaraSettingsManager.instance.platform
+    when Platform::Flutter
+      process_maifest(Language::Dart, FilePath.flutter_lib_artifacts)
+      process_maifest(Language::Dart, FilePath.brand_global_json_dir)
+    when Platform::IOS
+      process_maifest(Language::Swift, FilePath.ios_project_root_artifacts)
+      process_maifest(Language::Swift, FilePath.brand_global_json_dir)
+    when Platform::Android
+      process_maifest(Language::Kotlin, FilePath.android_project_java_artifacts )
+      process_maifest(Language::Kotlin, FilePath.brand_global_json_dir)
+    else
+      raise ArgumentError, "Invalid platform: #{@platform}"
+    end
+
+    Solara.logger.end_step("Process JSON manifest: #{@manifest_path}")
+  end
+
+  def process_maifest(language, output_path)
+    processor = JsonManifestProcessor.new(
+      @manifest_path,
+      language,
+      output_path
+    )
+    processor.process
   end
 end
 
@@ -225,7 +282,7 @@ class ThemeSwitcher
   def generate_theme(name, language, platform)
     Solara.logger.start_step("Generate #{name} for #{platform}")
 
-    theme_manager = ThemeGeneratorManager.new(FilePath.brand_theme(@brand_key))
+    theme_manager = ThemeGenerator.new(FilePath.brand_theme(@brand_key))
     theme_manager.generate(language, FilePath.generated_config(name, platform))
 
     Solara.logger.end_step("Generate #{name} for #{platform}")

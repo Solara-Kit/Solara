@@ -17,6 +17,14 @@ class BrandDetailModel {
         this.source = sourceFromUrl === DataSource.LOCAL ? DataSource.LOCAL : DataSource.REMOTE;
     }
 
+    isLocal() {
+       return  this.source === DataSource.LOCAL
+    }
+
+    isRemote() {
+       return  this.source === DataSource.REMOTE
+    }
+
     getQueryFromUrl(name) {
         return this.localSource.getQueryFromUrl(name);
     }
@@ -29,10 +37,10 @@ class BrandDetailModel {
         return await this.localSource.fetchCurrentBrand(this.brandKey);
     }
 
-    async saveSection(sectionItem, configuration) {
+    async saveSection(key, configuration) {
         switch (this.source) {
             case DataSource.LOCAL:
-                return await this.localSource.saveSection(sectionItem, configuration, this.brandKey);
+                return await this.localSource.saveSection(key, configuration, this.brandKey);
             case DataSource.REMOTE:
                 // Saving is not supported remotely. Instead, user can export the brand.
                 return
@@ -48,7 +56,7 @@ class BrandDetailModel {
     async checkBrandHealth() {
         switch (this.source) {
             case DataSource.LOCAL:
-        return await this.localSource.checkBrandHealth(this.brandKey);
+                return await this.localSource.checkBrandHealth(this.brandKey);
             case DataSource.REMOTE:
                 // Checking health is not supported remotely yet.
                 return
@@ -57,8 +65,8 @@ class BrandDetailModel {
         }
     }
 
-    async createNewBrandConfogurations() {
-        return await this.remoteSource.createNewBrandConfogurations();
+    async createNewBrandConfigurations() {
+        return await this.remoteSource.createNewBrandConfigurations();
     }
 
     async createBrandConfigurationsFromDirectory(dirHandle) {

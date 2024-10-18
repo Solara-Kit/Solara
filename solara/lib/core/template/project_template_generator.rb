@@ -46,6 +46,8 @@ class ProjectTemplateGenerator
       end
     else
       FileUtils.mkdir_p(File.dirname(target))
+      return if File.exist?(target)
+
       if File.exist?(source) && copy_content
         FileUtils.cp(source, target)
       else

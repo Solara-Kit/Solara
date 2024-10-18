@@ -29,7 +29,7 @@ class TemplateValidator
                 when 'file'
                     validate_file(errors, path, details)
                 else
-                    errors << "Unknown type '#{details['type']}' for #{path.relative_path_from(@project_path)}"
+                    errors << "Unknown type '#{details['type']}' for #{path}"
                 end
             end
         end
@@ -39,7 +39,7 @@ class TemplateValidator
 
     def validate_directory(errors, path, details)
         unless path.directory?
-            errors << "Missing directory: #{path.relative_path_from(@project_path)}"
+            errors << "Missing directory: #{path}"
             return
         end
         validate_structure(errors, path, details['contents']) if details['contents']
@@ -47,7 +47,7 @@ class TemplateValidator
 
     def validate_file(errors, path, details)
         unless path.file?
-            errors << "Missing file: #{path.relative_path_from(@project_path)}"
+            errors << "Missing file: #{path}"
             return
         end
 
@@ -57,12 +57,12 @@ class TemplateValidator
             case validation['type']
             when 'content_includes'
                 unless content.include?(validation['value'])
-                    errors << "File #{path.relative_path_from(@project_path)} does not contain expected content: #{validation['value']}"
+                    errors << "File #{path} does not contain expected content: #{validation['value']}"
                 end
 
             when 'content_matches'
                 unless content.match?(Regexp.new(validation['value']))
-                    errors << "File #{path.relative_path_from(@project_path)} does not match expected pattern: #{validation['value']}"
+                    errors << "File #{path} does not match expected pattern: #{validation['value']}"
                 end
 
             when 'file_size'
@@ -70,10 +70,10 @@ class TemplateValidator
                 min_size = validation['min_size']
                 max_size = validation['max_size']
                 if min_size && size < min_size
-                    errors << "File #{path.relative_path_from(@project_path)} is smaller than expected: #{size} < #{min_size} bytes"
+                    errors << "File #{path} is smaller than expected: #{size} < #{min_size} bytes"
                 end
                 if max_size && size > max_size
-                    errors << "File #{path.relative_path_from(@project_path)} is larger than expected: #{size} > #{max_size} bytes"
+                    errors << "File #{path} is larger than expected: #{size} > #{max_size} bytes"
                 end
 
             when 'valid_json'
@@ -92,7 +92,7 @@ class TemplateValidator
                 end
 
             else
-                errors << "Unknown validation type '#{validation['type']}' for #{path.relative_path_from(@project_path)}"
+                errors << "Unknown validation type '#{validation['type']}' for #{path}"
             end
         end
     end
@@ -101,7 +101,7 @@ class TemplateValidator
         expected_names = expected_structure.keys
         current_path.children.each do |child|
             unless expected_names.include?(child.basename.to_s)
-                errors << "Unexpected #{child.directory? ? 'directory' : 'file'}: #{child.relative_path_from(@project_path)}"
+                errors << "Unexpected #{child.directory? ? 'directory' : 'file'}: #{child}"
             end
         end
     end

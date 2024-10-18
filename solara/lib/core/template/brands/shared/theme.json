@@ -1,46 +1,230 @@
 {
   "name": "BrandTheme",
   "version": "1.0.0",
-  "colors": {
-    "primary": "#007AFF",
-    "secondary": "#5AC8FA",
-    "background": "#FFFFFF",
-    "surface": "#F2F2F7",
-    "error": "#FF3B30",
-    "onPrimary": "#FFFFFF",
-    "onSecondary": "#000000",
-    "onBackground": "#000000",
-    "onSurface": "#000000",
-    "onError": "#FFFFFF"
+  "colorSchemes": {
+    "light": {
+      "primary": "#6750A4",
+      "onPrimary": "#FFFFFF",
+      "primaryContainer": "#EADDFF",
+      "onPrimaryContainer": "#21005D",
+      "secondary": "#625B71",
+      "onSecondary": "#FFFFFF",
+      "secondaryContainer": "#E8DEF8",
+      "onSecondaryContainer": "#1D192B",
+      "tertiary": "#7D5260",
+      "onTertiary": "#FFFFFF",
+      "tertiaryContainer": "#FFD8E4",
+      "onTertiaryContainer": "#31111D",
+      "error": "#B3261E",
+      "onError": "#FFFFFF",
+      "errorContainer": "#F9DEDC",
+      "onErrorContainer": "#410E0B",
+      "background": "#FFFBFE",
+      "onBackground": "#1C1B1F",
+      "surface": "#FFFBFE",
+      "onSurface": "#1C1B1F",
+      "surfaceVariant": "#E7E0EC",
+      "onSurfaceVariant": "#49454F",
+      "outline": "#79747E",
+      "outlineVariant": "#CAC4D0",
+      "shadow": "#000000",
+      "scrim": "#000000",
+      "inverseSurface": "#313033",
+      "inverseOnSurface": "#F4EFF4",
+      "inversePrimary": "#D0BCFF",
+      "surfaceDim": "#DED8E1",
+      "surfaceBright": "#FFFBFE",
+      "surfaceTint": "#F0F0F0",
+      "surfaceContainerLowest": "#FFFFFF",
+      "surfaceContainerLow": "#F7F2FA",
+      "surfaceContainer": "#F3EDF7",
+      "surfaceContainerHigh": "#ECE6F0",
+      "surfaceContainerHighest": "#E6E0E9",
+      "primaryFixed": "#6A5ACD",
+      "primaryFixedDim": "#5B4B9A",
+      "onPrimaryFixed": "#FFFFFF",
+      "onPrimaryFixedVariant": "#21005D",
+      "secondaryFixed": "#7A6A8A",
+      "secondaryFixedDim": "#6B5B71",
+      "onSecondaryFixed": "#FFFFFF",
+      "onSecondaryFixedVariant": "#2C2735",
+      "tertiaryFixed": "#DA6A76",
+      "tertiaryFixedDim": "#C65B65",
+      "onTertiaryFixed": "#FFFFFF",
+      "onTertiaryFixedVariant": "#492532",
+      "onInverseSurface": "#FFFFFF"
+    },
+    "dark": {
+      "primary": "#D0BCFF",
+      "onPrimary": "#381E72",
+      "primaryContainer": "#4F378B",
+      "onPrimaryContainer": "#EADDFF",
+      "secondary": "#CCC2DC",
+      "onSecondary": "#332D41",
+      "secondaryContainer": "#4A4458",
+      "onSecondaryContainer": "#E8DEF8",
+      "tertiary": "#EFB8C8",
+      "onTertiary": "#492532",
+      "tertiaryContainer": "#633B48",
+      "onTertiaryContainer": "#FFD8E4",
+      "error": "#F2B8B5",
+      "onError": "#601410",
+      "errorContainer": "#8C1D18",
+      "onErrorContainer": "#F9DEDC",
+      "background": "#1C1B1F",
+      "onBackground": "#E6E1E5",
+      "surface": "#1C1B1F",
+      "onSurface": "#E6E1E5",
+      "surfaceVariant": "#49454F",
+      "onSurfaceVariant": "#CAC4D0",
+      "outline": "#938F99",
+      "outlineVariant": "#49454F",
+      "shadow": "#000000",
+      "scrim": "#000000",
+      "inverseSurface": "#E6E1E5",
+      "inverseOnSurface": "#313033",
+      "inversePrimary": "#6750A4",
+      "surfaceDim": "#141218",
+      "surfaceBright": "#3B383E",
+      "surfaceTint": "#121212",
+      "surfaceContainerLowest": "#0F0D13",
+      "surfaceContainerLow": "#1D1B20",
+      "surfaceContainer": "#211F26",
+      "surfaceContainerHigh": "#2B2930",
+      "surfaceContainerHighest": "#36343B",
+      "primaryFixed": "#B0A4E0",
+      "primaryFixedDim": "#A08DBE",
+      "onPrimaryFixed": "#381E72",
+      "onPrimaryFixedVariant": "#EADDFF",
+      "secondaryFixed": "#A69DB3",
+      "secondaryFixedDim": "#8C8A94",
+      "onSecondaryFixed": "#332D41",
+      "onSecondaryFixedVariant": "#E8DEF8",
+      "tertiaryFixed": "#EFB8C8",
+      "tertiaryFixedDim": "#C65B65",
+      "onTertiaryFixed": "#492532",
+      "onTertiaryFixedVariant": "#FFD8E4",
+      "onInverseSurface": "#1C1B1F"
+    }
   },
   "typography": {
     "fontFamily": {
-      "regular": "",
-      "medium": "",
-      "bold": ""
+      "regular": "Roboto, sans-serif",
+      "medium": "Roboto-Medium, sans-serif",
+      "bold": "Roboto-Bold, sans-serif"
     },
     "fontSize": {
-      "small": 12,
-      "medium": 16,
-      "large": 20,
-      "extraLarge": 24
+      "caption": 12,
+      "body1": 16,
+      "body2": 14,
+      "subtitle1": 16,
+      "subtitle2": 14,
+      "h6": 20,
+      "h5": 24,
+      "h4": 34,
+      "h3": 48,
+      "h2": 60,
+      "h1": 96
+    },
+    "fontWeight": {
+      "light": 300,
+      "regular": 400,
+      "medium": 500,
+      "bold": 700
+    },
+    "lineHeight": {
+      "tight": 1.2,
+      "normal": 1.5,
+      "relaxed": 1.8
+    },
+    "letterSpacing": {
+      "tight": -0.5,
+      "normal": 0,
+      "wide": 0.5
     }
   },
   "spacing": {
-    "small": 8,
-    "medium": 16,
-    "large": 24,
-    "extraLarge": 32
+    "xxs": 4,
+    "xs": 8,
+    "sm": 12,
+    "md": 16,
+    "lg": 24,
+    "xl": 32,
+    "xxl": 48
   },
   "borderRadius": {
-    "small": 4,
-    "medium": 8,
-    "large": 12
+    "none": 0,
+    "sm": 4,
+    "md": 8,
+    "lg": 12,
+    "full": 9999
   },
   "elevation": {
-    "none": 0,
-    "low": 2,
-    "medium": 4,
-    "high": 8
+    "none": {
+      "shadowColor": "#000000",
+      "shadowOffset": {
+        "width": 0,
+        "height": 0
+      },
+      "shadowOpacity": 0,
+      "shadowRadius": 0,
+      "elevation": 0
+    },
+    "low": {
+      "shadowColor": "#000000",
+      "shadowOffset": {
+        "width": 0,
+        "height": 2
+      },
+      "shadowOpacity": 0.1,
+      "shadowRadius": 4,
+      "elevation": 2
+    },
+    "medium": {
+      "shadowColor": "#000000",
+      "shadowOffset": {
+        "width": 0,
+        "height": 4
+      },
+      "shadowOpacity": 0.15,
+      "shadowRadius": 8,
+      "elevation": 4
+    },
+    "high": {
+      "shadowColor": "#000000",
+      "shadowOffset": {
+        "width": 0,
+        "height": 8
+      },
+      "shadowOpacity": 0.2,
+      "shadowRadius": 16,
+      "elevation": 8
+    }
+  },
+  "opacity": {
+    "disabled": 0.38,
+    "hovered": 0.08,
+    "focused": 0.12,
+    "pressed": 0.16,
+    "dragged": 0.24
+  },
+  "animation": {
+    "duration": {
+      "short": 200,
+      "medium": 300,
+      "long": 400
+    },
+    "easing": {
+      "standard": "cubic-bezier(0.4, 0.0, 0.2, 1)",
+      "accelerate": "cubic-bezier(0.4, 0.0, 1, 1)",
+      "decelerate": "cubic-bezier(0.0, 0.0, 0.2, 1)"
+    }
+  },
+  "breakpoints": {
+    "xs": 0,
+    "sm": 600,
+    "md": 960,
+    "lg": 1280,
+    "xl": 1920
   }
 }

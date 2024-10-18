@@ -40,8 +40,8 @@ class BrandsView {
         });
 
         const switchButton = brandItem.querySelector('.switch-button');
-        if (isCurrent && brand.content_changed) {
-            switchButton.textContent = "Apply Changes";
+        if (isCurrent) {
+            switchButton.textContent = "Sync";
             switchButton.style.display = "block";
         } else if (isCurrent && !brand.content_changed) {
             switchButton.style.display = "none";

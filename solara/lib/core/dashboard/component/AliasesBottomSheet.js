@@ -1,7 +1,7 @@
 class AliasesBottomSheet extends HTMLElement {
     constructor() {
         super();
-        this.attachShadow({ mode: 'open' });
+        this.attachShadow({mode: 'open'});
         this.shadowRoot.innerHTML = `
           <style>
     .aliases-bottom-sheet {
@@ -10,7 +10,7 @@ class AliasesBottomSheet extends HTMLElement {
         bottom: 0;
         left: 0;
         right: 0;
-        background-color: white;
+        background-color: var(--background-color);
         border-top-left-radius: 14px;
         border-top-right-radius: 14px;
         box-shadow: 0 -1.4px 7px rgba(0, 0, 0, 0.1);
@@ -18,7 +18,7 @@ class AliasesBottomSheet extends HTMLElement {
         padding: 14px;
         transition: transform 0.3s ease-out;
         transform: translateY(100%);
-        max-width: 490px;
+        max-width: 50%;
         margin: 0 auto;
         width: 100%;
         max-height: 56vh;
@@ -42,7 +42,7 @@ class AliasesBottomSheet extends HTMLElement {
     .aliases-bottom-sheet li {
         margin-bottom: 7px;
         font-family: monospace;
-        background-color: #f1f1f1;
+        background-color: var(--card-item-bg);
         padding: 3.5px;
         border-radius: 3.5px;
         font-size: 11.2px;
@@ -69,13 +69,13 @@ class AliasesBottomSheet extends HTMLElement {
         margin-top: 14px;
     }
     .close-aliases:hover {
-        background-color: #3a7bc8;
+        background-color: var(--hover);
     }
 </style>
 
 <div class="overlay"></div>
 <div class="aliases-bottom-sheet" id="aliasesSheet">
-    <h3>Aliases</h3>
+    <h2>Aliases</h2>
     <div id="commonAliases">
         <h4>Common Aliases</h4>
         <ul id="commonAliasesList"></ul>

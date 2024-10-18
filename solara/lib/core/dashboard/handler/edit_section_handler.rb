@@ -33,11 +33,7 @@ class EditSectionHandler < BaseHandler
         path = template[:path]
         
         if File.exist?(path)
-            if key === 'InfoPlist.xcstrings'
-                InfoPListStringCatalogManager.new(FilePath.brand_infoplist_string_catalog(brand_key)).update(data)
-            else
-                File.write(path, JSON.pretty_generate(data))
-            end
+            File.write(path, JSON.pretty_generate(data))
             Solara.logger.debug("Updated Config for #{path}: #{data}")
         else
             raise "Config file not found: #{path}"

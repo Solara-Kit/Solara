@@ -25,6 +25,15 @@ structure:
                     - type: valid_json
                     - type: json_schema
                       schema_path: platform/android/android_signing.json
+            json:
+                type: directory
+                contents:
+                    json_manifest.json:
+                        type: file
+                        validations:
+                            - type: valid_json
+                            - type: json_schema
+                              schema_path: platform/json_manifest.json
     ios:
         type: directory
         contents:
@@ -51,6 +60,15 @@ structure:
                 contents:
                     AppIcon.appiconset:
                         type: directory
+            json:
+                type: directory
+                contents:
+                    json_manifest.json:
+                        type: file
+                        validations:
+                            - type: valid_json
+                            - type: json_schema
+                              schema_path: platform/json_manifest.json
     shared:
         type: directory
         contents:
@@ -64,6 +82,22 @@ structure:
                 type: file
                 validations:
                     - type: valid_json
+    ../../global:
+        type: directory
+        contents:
+            resources_manifest.json:
+                type: file
+                validations:
+                    - type: valid_json
                     - type: json_schema
-                      schema_path: platform/shared/theme.json
+                      schema_path: platform/global/resources_manifest.json
+            json:
+                type: directory
+                contents:
+                    json_manifest.json:
+                        type: file
+                        validations:
+                            - type: valid_json
+                            - type: json_schema
+                              schema_path: platform/json_manifest.json
 strict: false

@@ -4,7 +4,7 @@ class BrandOptionsBottomSheet extends HTMLElement {
         this.attachShadow({mode: 'open'});
 
         this.shadowRoot.innerHTML = `
-              <head>
+    <head>
     <style>
     .bottom-sheet {
         display: none;
@@ -12,7 +12,7 @@ class BrandOptionsBottomSheet extends HTMLElement {
         bottom: 0;
         left: 0;
         right: 0;
-        background-color: white;
+        background-color: var(--background-color);
         border-top-left-radius: 14px;
         border-top-right-radius: 14px;
         box-shadow: 0 -1.4px 7px rgba(0, 0, 0, 0.1);
@@ -20,7 +20,7 @@ class BrandOptionsBottomSheet extends HTMLElement {
         padding: 14px;
         transition: transform 0.3s ease-out;
         transform: translateY(100%);
-        max-width: 490px;
+        max-width: 50%;
         margin: 0 auto;
         width: 100%;
     }
@@ -41,7 +41,7 @@ class BrandOptionsBottomSheet extends HTMLElement {
         font-size: 12.6px;
     }
     .bottom-sheet li:hover {
-        background-color: var(--background-color);
+        background-color: var(--hover);
     }
     .bottom-sheet li i {
         margin-right: 10.5px;

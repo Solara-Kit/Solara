@@ -4,124 +4,36 @@ class BrandRemoteSource {
     constructor() {
     }
 
-    async createNewBrandConfogurations() {
-        const configurations_template = `
-        [
-  {
-    "key": "theme.json",
-    "name": "Theme Configuration",
-    "inputType": "color",
-    "content": {
-      "colors": {
-        "primary": "#CAAC16",
-        "secondary": "#5AC8FA",
-        "background": "#FFFFFF",
-        "surface": "#F2F2F7",
-        "error": "#FF3B30",
-        "onPrimary": "#FFFFFF",
-        "onSecondary": "#000000",
-        "onBackground": "#000000",
-        "onSurface": "#000000",
-        "onError": "#FFFFFF"
-      },
-      "typography": {
-        "fontFamily": {
-          "regular": "",
-          "medium": "",
-          "bold": ""
-        },
-        "fontSize": {
-          "small": 12,
-          "medium": 16,
-          "large": 20,
-          "extraLarge": 24
+    async createNewBrandConfigurations() {
+        const url = 'https://raw.githubusercontent.com/Solara-Kit/Solara/refs/heads/develop/solara/lib/core/template/configurations.json';
+
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error('Network response was not ok: ' + response.statusText);
+            }
+
+            const configurations = await response.json();
+            const contentPromises = configurations.configurations.map(async (config) => {
+                const contentResponse = await fetch(config.url);
+                if (!contentResponse.ok) {
+                    throw new Error('Failed to fetch content for ' + config.key);
+                }
+                const content = await contentResponse.json();
+                return {
+                    key: config.key,
+                    name: config.name,
+                    content: content
+                };
+            });
+
+            // Wait for all content fetch promises to resolve
+            return await Promise.all(contentPromises);
+
+        } catch (error) {
+            console.error('There was a problem with the fetch operation:', error);
+            return null; // Return null in case of error
         }
-      },
-      "spacing": {
-        "small": 8,
-        "medium": 16,
-        "large": 24,
-        "extraLarge": 32
-      },
-      "borderRadius": {
-        "small": 4,
-        "medium": 8,
-        "large": 12
-      },
-      "elevation": {
-        "none": 0,
-        "low": 2,
-        "medium": 4,
-        "high": 8
-      }
-    }
-  },
-  {
-    "key": "brand_config.json",
-    "name": "Brand Configuration",
-    "inputType": "text",
-    "content": {}
-  },
-  {
-    "key": "android_config.json",
-    "name": "Android Configuration",
-    "inputType": "text",
-    "content": {
-      "applicationId": "",
-      "versionName": "1.0.0",
-      "versionCode": 1,
-      "sourceSets": []
-    }
-  },
-  {
-    "key": "android_signing.json",
-    "name": "Android Signing",
-    "inputType": "text",
-    "content": {
-      "storeFile": "",
-      "keyAlias": "",
-      "storePassword": "",
-      "keyPassword": ""
-    }
-  },
-  {
-    "key": "ios_config.json",
-    "name": "iOS Configuration",
-    "inputType": "text",
-    "content": {
-      "PRODUCT_BUNDLE_IDENTIFIER": "",
-      "MARKETING_VERSION": "1.0.0",
-      "BUNDLE_VERSION": 1,
-      "APL_MRCH_ID": ""
-    }
-  },
-  {
-    "key": "ios_signing.json",
-    "name": "iOS Signing",
-    "inputType": "text",
-    "content": {
-      "CODE_SIGN_IDENTITY": "",
-      "DEVELOPMENT_TEAM": "",
-      "PROVISIONING_PROFILE_SPECIFIER": "",
-      "CODE_SIGN_STYLE": "Automatic",
-      "CODE_SIGN_ENTITLEMENTS": ""
-    }
-  },
-  {
-    "key": "ios_signing.json",
-    "name": "iOS Signing",
-    "inputType": "text",
-    "content": {
-      "CODE_SIGN_IDENTITY": "",
-      "DEVELOPMENT_TEAM": "",
-      "PROVISIONING_PROFILE_SPECIFIER": "",
-      "CODE_SIGN_STYLE": "Automatic",
-      "CODE_SIGN_ENTITLEMENTS": ""
-    }
-  }
-]
-`;
-        return JSON.parse(configurations_template);
     }
 
     async getBrandConfigurationsJsonFromDirectory(dirHandle) {
@@ -161,9 +73,7 @@ class BrandRemoteSource {
             if (!response.ok) {
                 throw new Error('Network response was not ok: ' + response.statusText);
             }
-            const data = await response.json();
-            console.log(data);
-            return data; // Return the data instead of null
+            return await response.json();
         } catch (error) {
             console.error('There was a problem with the fetch operation:', error);
             return null; // Return null in case of error
@@ -175,33 +85,27 @@ class BrandRemoteSource {
         const expectedFiles = [
             {
                 key: 'theme.json',
-                name: 'Theme Configuration',
-                input_type: 'color'
+                name: 'Theme Configuration'
             },
             {
                 key: 'brand_config.json',
-                name: 'Brand Configuration',
-                input_type: 'text'
+                name: 'Brand Configuration'
             },
             {
                 key: 'android_config.json',
-                name: 'Android Configuration',
-                input_type: 'text'
+                name: 'Android Configuration'
             },
             {
                 key: 'android_signing.json',
-                name: 'Android Signing',
-                input_type: 'text'
+                name: 'Android Signing'
             },
             {
                 key: 'ios_config.json',
-                name: 'iOS Configuration',
-                input_type: 'text'
+                name: 'iOS Configuration'
             },
             {
                 key: 'ios_signing.json',
-                name: 'iOS Signing',
-                input_type: 'text'
+                name: 'iOS Signing'
             }
         ];
 
@@ -212,7 +116,6 @@ class BrandRemoteSource {
                     configList.push({
                         key: file.key,
                         name: file.name,
-                        inputType: file.input_type,
                         content: JSON.parse(fileContent)
                     });
                 }

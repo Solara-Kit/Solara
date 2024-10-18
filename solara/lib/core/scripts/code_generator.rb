@@ -16,19 +16,48 @@ module Language
   end
 end
 
+class ClassNameRegistry
+  def initialize(custom_types)
+    @custom_types = custom_types
+    @registry = {}
+  end
+
+  def register(original_name, prefixed_name, context = [])
+    full_context = (context + [original_name]).join('.')
+    @registry[full_context] = prefixed_name
+  end
+
+  def get(name, context = [])
+    full_context = (context + [name]).join('.')
+    result = @registry[full_context] || name
+    @custom_types[result] || result
+  end
+
+  def original_names
+    @registry.keys
+  end
+
+  def prefixed_names
+    @registry.values
+  end
+end
+
 class CodeGenerator
   def initialize(
     json:,
     language:,
-    parent_class_name:)
+    parent_class_name:,
+    custom_types: {}
+  )
     @json = json
     @language = language
     @parent_class_name = parent_class_name
+    @custom_types = custom_types
     @generator = create_language_generator
   end
 
   def generate
-      @generator.generate_content
+    @generator.generate_content
   end
 
   private
@@ -36,11 +65,11 @@ class CodeGenerator
   def create_language_generator
     case @language
     when Language::Kotlin
-      KotlinCodeGenerator.new(@json, @parent_class_name)
+      KotlinCodeGenerator.new(@json, @parent_class_name, @custom_types)
     when Language::Swift
-      SwiftCodeGenerator.new(@json, @parent_class_name)
+      SwiftCodeGenerator.new(@json, @parent_class_name, @custom_types)
     when Language::Dart
-      DartCodeGenerator.new(@json, @parent_class_name)
+      DartCodeGenerator.new(@json, @parent_class_name, @custom_types)
     else
       raise ArgumentError, "Unsupported language: #{@language}"
     end
@@ -48,9 +77,12 @@ class CodeGenerator
 end
 
 class BaseCodeGenerator
-  def initialize(json, parent_class_name)
+  def initialize(json, parent_class_name, custom_types)
     @parent_class_name = parent_class_name
     @json = json
+    @custom_types = custom_types
+    @class_registry = ClassNameRegistry.new(custom_types)
+    register_class_names(@parent_class_name, @json)
   end
 
   def generate_content
@@ -65,35 +97,60 @@ class BaseCodeGenerator
       content += "\n"
     end
 
-    content
+    other_classes = language_specific_classes
+    other_classes.each do |item|
+      content += item
+    end
+
+    content + "\n"
   end
 
-  def generate_classes(class_name, json, classes, generate_json: false)
-    content = class_declaration(class_name)
+  private
+
+  def register_class_names(class_name, json, context = [])
+    full_context = context + [class_name]
+    prefixed_name = full_context.join
+    @class_registry.register(class_name, prefixed_name, context)
+
+    json.each do |key, value|
+      if value.is_a?(Hash)
+        nested_class_name = capitalize(key)
+        register_class_names(nested_class_name, value, full_context)
+      elsif value.is_a?(Array) && value.any? { |item| item.is_a?(Hash) }
+      nested_class_name = "#{capitalize(key)}Item"
+        register_class_names(nested_class_name, value.first, full_context)
+      end
+    end
+  end
+
+  def generate_classes(class_name, json, classes, context = [], generate_json: false)
+    full_context = context + [class_name]
+    prefixed_class_name = @class_registry.get(class_name, context)
+    content = class_declaration(prefixed_class_name)
     constructor_params = []
 
     json.each do |key, value|
-      type = value_type(value, key)
+      type = value_type(value, key, full_context)
       content += property_declaration(key, type, json)
       constructor_params << constructor_parameter(key, type)
     end
 
     content += property_declaration("asJson", "String", json)
 
-    content += constructor_declaration(class_name, constructor_params)
-    content += instance_declaration(class_name, json)
-    content += json_methods(json, class_name)
+    content += constructor_declaration(prefixed_class_name, constructor_params)
+    content += instance_declaration(prefixed_class_name, json, full_context)
+    content += json_methods(json, prefixed_class_name, full_context)
     content += class_closing
 
     classes << content
 
     json.each do |key, value|
       if value.is_a?(Hash)
-        nested_class_name = "#{key[0].upcase}#{key[1..-1]}"  # Capitalize first character
-        generate_classes(nested_class_name, value, classes)
+        nested_class_name = capitalize(key)
+        generate_classes(nested_class_name, value, classes, full_context)
       elsif value.is_a?(Array) && value.any? { |item| item.is_a?(Hash) }
-        nested_class_name = "#{key[0].upcase}#{key[1..-1]}Item"  # Capitalize first character
-        generate_classes(nested_class_name, value.first, classes)
+      nested_class_name = "#{capitalize(key)}Item"
+        generate_classes(nested_class_name, value.first, classes, full_context)
       end
     end
   end
@@ -106,6 +163,10 @@ class BaseCodeGenerator
     raise NotImplementedError, "Subclasses must implement property_declaration"
   end
 
+  def color_type
+    raise NotImplementedError, "Subclasses must implement property_declaration"
+  end
+
   def constructor_parameter(key, type)
     raise NotImplementedError, "Subclasses must implement constructor_parameter"
   end
@@ -114,11 +175,11 @@ class BaseCodeGenerator
     raise NotImplementedError, "Subclasses must implement constructor_declaration"
   end
 
-  def instance_declaration(class_name, json)
+  def instance_declaration(class_name, json, context)
     raise NotImplementedError, "Subclasses must implement instance_declaration"
   end
 
-  def json_methods(json, class_name)
+  def json_methods(json, class_name, context)
     raise NotImplementedError, "Subclasses must implement json_methods"
   end
 
@@ -130,12 +191,12 @@ class BaseCodeGenerator
     raise NotImplementedError, "Subclasses must implement language_specific_imports"
   end
 
-  def value_type(value, class_prefix)
+  def value_type(value, class_prefix, context = [])
     raise NotImplementedError, "Subclasses must implement value_type"
   end
 
-  def value_for(value, class_prefix, indent)
-    raise NotImplementedError, "Subclasses must implement value_type"
+  def value_for(value, class_prefix, indent, context = [])
+    raise NotImplementedError, "Subclasses must implement value_for"
   end
 
   def color_for(value)
@@ -144,6 +205,14 @@ class BaseCodeGenerator
 
   def language_specific_null
     raise NotImplementedError, "Subclasses must implement language_specific_null"
+  end
+
+  def language_specific_classes
+    []
+  end
+
+  def capitalize(string)
+    "#{string[0].upcase}#{string[1..-1]}"
   end
 end
 
@@ -161,9 +230,15 @@ class KotlinCodeGenerator < BaseCodeGenerator
     if key == "asJson"
       json_string = json.to_json.gsub('"', '\\"')
       "  val #{key}: String = \"#{json_string}\",\n"
+    elsif json[key].is_a?(String) && ColorDetector.new(json[key]).color?
+      "  val #{key}: #{color_type},\n"
     else
       "  val #{key}: #{type},\n"
     end
+  end
+
+  def color_type
+    "Int"
   end
 
   def constructor_parameter(key, type)
@@ -174,11 +249,11 @@ class KotlinCodeGenerator < BaseCodeGenerator
     "): Serializable {\n"
   end
 
-  def instance_declaration(class_name, json)
-    "  companion object {\n    val instance = #{class_name}(\n#{json.map { |k, v| "      #{k} = #{value_for(v, k, '      ')}" }.join(",\n")}\n    )\n  }\n"
+  def instance_declaration(class_name, json, context)
+    "  companion object {\n    val instance = #{class_name}(\n#{json.map { |k, v| "      #{k} = #{value_for(v, k, '      ', context)}" }.join(",\n")}\n    )\n  }\n"
   end
 
-  def json_methods(json, class_name)
+  def json_methods(json, class_name, context)
     ""
   end
 
@@ -186,41 +261,47 @@ class KotlinCodeGenerator < BaseCodeGenerator
     "}\n"
   end
 
-  def value_for(value, class_prefix, indent)
+ def value_for(value, class_prefix, indent, context = [])
+  case value
+  when String
+    if ColorDetector.new(value).color?
+      color_for(value)
+    else
+      "\"#{value}\""  # Use double quotes for Kotlin strings
+    end
+  when Integer
+    value.to_s
+  when Float
+    "#{value}F"  # Add 'F' suffix for float values
+  when TrueClass, FalseClass
+    value.to_s
+  when Array
+    if value.empty?
+      "emptyList()"  # Use Kotlin's emptyList() for empty arrays
+    elsif value.all? { |item| item.is_a?(Hash) }
+      array_items = value.map do |item|
+        item_values = item.map { |k, v| "#{k} = #{value_for(v, k, indent + '    ')}" }.join(",\n#{indent}    ")
+        "#{@class_registry.get("#{capitalize(class_prefix)}Item")}(\n#{indent}    #{item_values}\n#{indent}  )"
+      end.join(",\n#{indent}  ")
+      "listOf(\n#{indent}  #{array_items}\n#{indent})"
+    else
+      array_items = value.map { |item| value_for(item, class_prefix, indent + '  ') }.join(", ")
+      "listOf(\n#{indent}  #{array_items}\n#{indent})"  # Use listOf for non-empty lists
+    end
+  when Hash
+    "#{@class_registry.get(capitalize(class_prefix), context)}.instance"
+  else
+    language_specific_null
+  end
+end
+
+  def value_type(value, class_prefix, context = [])
     case value
     when String
-      if value.start_with?('#') && value.length == 7 # Assume it's a color
-        color_for(value)
-      else
-        "\"#{value}\""  # Use double quotes for Kotlin strings
+      if ColorDetector.new(value).color?
+        return color_type
       end
-    when Integer, Float
-      value.to_s
-    when TrueClass, FalseClass
-      value.to_s
-    when Array
-      if value.empty?
-        "emptyList()"  # Use Kotlin's emptyList() for empty arrays
-      elsif value.all? { |item| item.is_a?(Hash) }
-        array_items = value.map do |item|
-          item_values = item.map { |k, v| "#{k} = #{value_for(v, k, indent + '    ')}" }.join(",\n#{indent}    ")
-          "#{class_prefix[0].upcase}#{class_prefix[1..-1]}Item(\n#{indent}    #{item_values}\n#{indent}  )"
-        end.join(",\n#{indent}  ")
-        "listOf(\n#{indent}  #{array_items}\n#{indent})"
-      else
-        array_items = value.map { |item| value_for(item, class_prefix, indent + '  ') }.join(", ")
-        "listOf(\n#{indent}  #{array_items}\n#{indent})"  # Use listOf for non-empty lists
-      end
-    when Hash
-      "#{class_prefix[0].upcase}#{class_prefix[1..-1]}.instance"
-    else
-      language_specific_null
-    end
-  end
-
-  def value_type(value, class_prefix)
-    case value
-    when String then 'String'
+      return 'String'
     when Integer then 'Int'
     when Float then 'Float'
     when TrueClass, FalseClass then 'Boolean'
@@ -236,11 +317,11 @@ class KotlinCodeGenerator < BaseCodeGenerator
       elsif value.all? { |item| item.is_a?(TrueClass) || item.is_a?(FalseClass) }
         'List<Boolean>'
       elsif value.all? { |item| item.is_a?(Hash) }
-        "List<#{class_prefix[0].upcase}#{class_prefix[1..-1]}Item>"
+      "List<#{@class_registry.get("#{capitalize(class_prefix)}Item")}>"
       else
         'List<Any>'
       end
-    when Hash then "#{class_prefix[0].upcase}#{class_prefix[1..-1]}"
+    when Hash then @class_registry.get(capitalize(class_prefix), context)
     else 'Any'
     end
   end
@@ -250,26 +331,33 @@ class KotlinCodeGenerator < BaseCodeGenerator
   end
 
   def language_specific_null
-    'null'
+    "null"
   end
 end
 
 class SwiftCodeGenerator < BaseCodeGenerator
   def language_specific_imports
+    "import Foundation\n" +
     "import UIKit\n\n"
   end
 
   def class_declaration(class_name)
-    "struct #{class_name}: Codable {\n"
+    "\nclass #{class_name}: Codable {\n"
   end
 
   def property_declaration(key, type, json)
     if key == "asJson"
       json_string = json.to_json.gsub('"', '\\"')
       "  let #{key}: String = \"#{json_string}\"\n"
+    elsif json[key].is_a?(String) && ColorDetector.new(json[key]).color?
+      "  let #{key}: #{color_type}\n"
     else
       "  let #{key}: #{type}\n"
     end
+  end
+
+  def color_type
+    "UIColor"
   end
 
   def constructor_parameter(key, type)
@@ -277,39 +365,75 @@ class SwiftCodeGenerator < BaseCodeGenerator
   end
 
   def constructor_declaration(class_name, params)
-    "\n  init(\n#{params.map { |p| "       #{p}"}.join(",\n")}) {\n#{params.map { |p| "    self.#{p.split(':').first} = #{p.split(':').first}" }.join("\n")}\n  }\n\n"
+    "  init(#{params.join(", ")}) {\n" +
+    params.map { |param| "    self.#{param.split(":").first} = #{param.split(":").first}" }.join("\n") +
+    "\n  }\n\n"
   end
 
-  def instance_declaration(class_name, json)
-    "  static let shared = #{class_name}(\n#{json.map { |k, v| "    #{k}: #{value_for(v, k, '    ')}" }.join(",\n")}\n  )\n"
+  def instance_declaration(class_name, json, context)
+    "  static let shared = #{class_name}(\n" +
+    json.map { |k, v| "    #{k}: #{value_for(v, k, '    ', context)}" }.join(",\n") +
+    "\n  )\n\n"
   end
 
-  def json_methods(json, class_name)
-    "  func toJson() -> String? {\n" +
-    "    let encoder = JSONEncoder()\n" +
-    "    if let jsonData = try? encoder.encode(self) {\n" +
-    "      return String(data: jsonData, encoding: .utf8)\n" +
-    "    }\n" +
-    "    return nil\n" +
-    "  }\n\n" +
-    "  static func fromJson(_ json: String) -> #{class_name}? {\n" +
-    "    let decoder = JSONDecoder()\n" +
-    "    if let jsonData = json.data(using: .utf8),\n" +
-    "       let result = try? decoder.decode(#{class_name}.self, from: jsonData) {\n" +
-    "      return result\n" +
-    "    }\n" +
-    "    return nil\n" +
-    "  }\n"
+  def json_methods(json, class_name, context)
+    prefixed_class_name = @class_registry.get(capitalize(class_name))
+    coding_keys = json.map { |key, _| "    case #{key}" }.join("\n")
+
+    <<-SWIFT
+  private enum CodingKeys: String, CodingKey {
+  #{coding_keys}
+  }
+
+  func toJson() -> String? {
+    let encoder = JSONEncoder()
+    if let jsonData = try? encoder.encode(self) {
+      return String(data: jsonData, encoding: .utf8)
+    }
+    return nil
+  }
+
+  required init(from decoder: Decoder) throws {
+    let container = try decoder.container(keyedBy: CodingKeys.self)
+    #{json.map { |key, value|
+      if value.is_a?(String) && ColorDetector.new(value).color?
+        "self.#{key} = UIColor(hex: try container.decode(String.self, forKey: .#{key}))"
+      else
+        "self.#{key} = try container.decode(#{value_type(value, key, context)}.self, forKey: .#{key})"
+      end
+    }.join("\n    ")}
+  }
+
+  func encode(to encoder: Encoder) throws {
+    var container = encoder.container(keyedBy: CodingKeys.self)
+    #{json.map { |key, value|
+     if value.is_a?(String) && ColorDetector.new(value).color?
+        "try container.encode(#{key}.toHexString(), forKey: .#{key})"
+      else
+        "try container.encode(#{key}, forKey: .#{key})"
+      end
+    }.join("\n    ")}
+  }
+
+  static func fromJson(_ json: String) -> #{prefixed_class_name}? {
+    let decoder = JSONDecoder()
+    if let jsonData = json.data(using: .utf8),
+       let result = try? decoder.decode(#{prefixed_class_name}.self, from: jsonData) {
+      return result
+    }
+    return nil
+  }
+    SWIFT
   end
 
   def class_closing
     "}\n"
   end
 
-  def value_for(value, class_prefix, indent)
+  def value_for(value, class_prefix, indent, context = [])
     case value
     when String
-      if value.start_with?('#') && value.length == 7 # Assume it's a color
+      if ColorDetector.new(value).color?
         color_for(value)
       else
         "\"#{value}\""
@@ -324,7 +448,7 @@ class SwiftCodeGenerator < BaseCodeGenerator
       elsif value.all? { |item| item.is_a?(Hash) }
         array_items = value.map do |item|
           item_values = item.map { |k, v| "#{k}: #{value_for(v, k, indent + '    ')}" }.join(",\n#{indent}    ")
-          "#{class_prefix[0].upcase}#{class_prefix[1..-1]}Item(\n#{indent}    #{item_values}\n#{indent}  )"
+          "#{@class_registry.get("#{capitalize(class_prefix)}Item")}(\n#{indent}    #{item_values}\n#{indent}  )"
         end.join(",\n#{indent}  ")
         "[\n#{indent}  #{array_items}\n#{indent}]"
       else
@@ -332,15 +456,19 @@ class SwiftCodeGenerator < BaseCodeGenerator
         "[\n#{indent}  #{array_items}\n#{indent}]"
       end
     when Hash
-      "#{class_prefix[0].upcase}#{class_prefix[1..-1]}.shared"
+      "#{@class_registry.get(capitalize(class_prefix), context)}.shared"
     else
       language_specific_null
     end
   end
 
-  def value_type(value, class_prefix)
+  def value_type(value, class_prefix, context = [])
     case value
-    when String then 'String'
+    when String
+      if ColorDetector.new(value).color?
+        return color_type
+      end
+      return 'String'
     when Integer then 'Int'
     when Float then 'Double'
     when TrueClass, FalseClass then 'Bool'
@@ -356,76 +484,157 @@ class SwiftCodeGenerator < BaseCodeGenerator
       elsif value.all? { |item| item.is_a?(TrueClass) || item.is_a?(FalseClass) }
         '[Bool]'
       elsif value.all? { |item| item.is_a?(Hash) }
-        "[#{class_prefix[0].upcase}#{class_prefix[1..-1]}Item]"
+        "[#{@class_registry.get("#{capitalize(class_prefix)}Item")}]"
       else
         '[Any]'
       end
-    when Hash then "#{class_prefix[0].upcase}#{class_prefix[1..-1]}"
+    when Hash then @class_registry.get(capitalize(class_prefix), context)
     else 'Any'
     end
   end
 
   def color_for(value)
-    r, g, b = value[1..2].to_i(16), value[3..4].to_i(16), value[5..6].to_i(16)
-    "UIColor(red: #{r}/255.0, green: #{g}/255.0, blue: #{b}/255.0, alpha: 1.0)"
+    "UIColor(hex: \"#{value}\")"
   end
 
   def language_specific_null
-    'nil'
+    "nil"
+  end
+
+  def language_specific_classes
+    [
+      <<-SWIFT
+private extension UIColor {
+    convenience init(hex: String) {
+        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
+        var int = UInt64()
+        Scanner(string: hex).scanHexInt64(&int)
+        let a, r, g, b: UInt64
+        switch hex.count {
+        case 3: // RGB (12-bit)
+            (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
+        case 6: // RGB (24-bit)
+            (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
+        case 8: // ARGB (32-bit)
+            (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
+        default:
+            (a, r, g, b) = (255, 0, 0, 0)
+        }
+        self.init(red: CGFloat(r) / 255, green: CGFloat(g) / 255, blue: CGFloat(b) / 255, alpha: CGFloat(a) / 255)
+    }
+
+    func toHexString() -> String {
+        var r:CGFloat = 0
+        var g:CGFloat = 0
+        var b:CGFloat = 0
+        var a:CGFloat = 0
+
+        getRed(&r, green: &g, blue: &b, alpha: &a)
+
+        let rgb:Int = (Int)(r*255)<<16 | (Int)(g*255)<<8 | (Int)(b*255)<<0
+
+        return String(format: "#%06x", rgb)
+    }
+}
+      SWIFT
+    ]
   end
 end
 
 class DartCodeGenerator < BaseCodeGenerator
   def language_specific_imports
-    "import 'package:flutter/material.dart';\n" +
-    "import 'dart:convert';\n\n"
+    "import 'dart:convert';\n" +
+    "import 'package:flutter/material.dart';\n\n"
   end
 
   def class_declaration(class_name)
-    "class #{class_name} {\n"
+    "\nclass #{class_name} {\n"
   end
 
   def property_declaration(key, type, json)
     if key == "asJson"
       json_string = json.to_json.gsub('"', '\\"')
       "  final String #{key} = \"#{json_string}\";\n"
+    elsif json[key].is_a?(String) && ColorDetector.new(json[key]).color?
+      "  final #{color_type} #{key};\n"
     else
       "  final #{type} #{key};\n"
     end
   end
 
+  def color_type
+    "Color"
+  end
+
   def constructor_parameter(key, type)
-    "required this.#{key}"
+    "\n     required this.#{key}"
   end
 
   def constructor_declaration(class_name, params)
-    params.empty? ? "\n  const #{class_name}();\n\n" : "\n  const #{class_name}({\n#{params.map { |p| "       #{p}"}.join(",\n")}});\n\n"
+    "  const #{class_name}({#{params.join(", ")}});\n\n"
   end
 
-  def instance_declaration(class_name, json)
-    "  static const #{class_name} instance = #{class_name}(\n#{json.map { |k, v| "    #{k}: #{value_for(v, k, '    ')}" }.join(",\n")}\n  );\n"
+  def instance_declaration(class_name, json, context)
+    "  static const #{class_name} instance = #{class_name}(\n" +
+    json.map { |k, v| "    #{k}: #{value_for(v, k, '    ', context)}" }.join(",\n") +
+    "\n  );\n\n"
   end
 
-  def json_methods(json, class_name)
-    "  Map<String, dynamic> toJson() => {\n" +
-    "    #{json.keys.map { |k| "'#{k}': #{k}" }.join(",\n    ")}\n" +
-    "  };\n\n" +
-    "  factory #{class_name}.fromJson(Map<String, dynamic> json) => #{class_name}(\n" +
-    "    #{json.keys.map { |k| "#{k}: json['#{k}']" }.join(",\n    ")}\n" +
-    "  );\n\n" +
-    "  String toJsonString() => jsonEncode(toJson());\n\n" +
-    "  factory #{class_name}.fromJsonString(String jsonString) =>\n" +
-    "      #{class_name}.fromJson(jsonDecode(jsonString) as Map<String, dynamic>);\n"
+  def json_methods(json, class_name, context)
+    prefixed_class_name = @class_registry.get(class_name)
+    from_json_content = json.map do |key, value|
+      if value.is_a?(String) && ColorDetector.new(value).color?
+        "      #{key}: Color(int.parse(json['#{key}'].substring(1, 7), radix: 16) + 0xFF000000)"
+      else
+        "      #{key}: json['#{key}']"
+      end
+    end.join(",\n")
+
+    to_json_content = json.map do |key, value|
+      if value.is_a?(String) && ColorDetector.new(value).color?
+        "'#{key}': '#${#{key}.value.toRadixString(16).padLeft(8, '0').substring(2)}'"
+      else
+        "'#{key}': #{key}"
+      end
+    end.join(",\n      ")
+
+    <<-DART
+  factory #{prefixed_class_name}.fromJson(Map<String, dynamic> json) {
+    return #{prefixed_class_name}(
+#{from_json_content}
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      #{to_json_content}
+    };
+  }
+
+  String toJsonString() {
+    return json.encode(toJson());
+  }
+
+  static #{prefixed_class_name}? fromJsonString(String jsonString) {
+    try {
+      final Map<String, dynamic> jsonMap = json.decode(jsonString);
+      return #{prefixed_class_name}.fromJson(jsonMap);
+    } catch (e) {
+      print('Error parsing JSON: $e');
+      return null;
+    }
+  }
+    DART
   end
 
   def class_closing
     "}\n"
   end
 
-  def value_for(value, class_prefix, indent)
+  def value_for(value, class_prefix, indent, context = [])
     case value
     when String
-      if value.start_with?('#') && value.length == 7 # Assume it's a color
+      if ColorDetector.new(value).color?
         color_for(value)
       else
         "\"#{value}\""
@@ -440,7 +649,7 @@ class DartCodeGenerator < BaseCodeGenerator
       elsif value.all? { |item| item.is_a?(Hash) }
         array_items = value.map do |item|
           item_values = item.map { |k, v| "#{k}: #{value_for(v, k, indent + '    ')}" }.join(",\n#{indent}    ")
-          "#{class_prefix[0].upcase}#{class_prefix[1..-1]}Item(\n#{indent}    #{item_values}\n#{indent}  )"
+          "#{@class_registry.get("#{capitalize(class_prefix)}Item")}(\n#{indent}    #{item_values}\n#{indent}  )"
         end.join(",\n#{indent}  ")
         "[\n#{indent}  #{array_items}\n#{indent}]"
       else
@@ -448,15 +657,19 @@ class DartCodeGenerator < BaseCodeGenerator
         "[\n#{indent}  #{array_items}\n#{indent}]"
       end
     when Hash
-      "#{class_prefix[0].upcase}#{class_prefix[1..-1]}.instance"
+      "#{@class_registry.get(capitalize(class_prefix), context)}.instance"
     else
       language_specific_null
     end
   end
 
-  def value_type(value, class_prefix)
+  def value_type(value, class_prefix, context = [])
     case value
-    when String then 'String'
+    when String
+      if ColorDetector.new(value).color?
+        return color_type
+      end
+      return 'String'
     when Integer then 'int'
     when Float then 'double'
     when TrueClass, FalseClass then 'bool'
@@ -472,11 +685,11 @@ class DartCodeGenerator < BaseCodeGenerator
       elsif value.all? { |item| item.is_a?(TrueClass) || item.is_a?(FalseClass) }
         'List<bool>'
       elsif value.all? { |item| item.is_a?(Hash) }
-        "List<#{class_prefix[0].upcase}#{class_prefix[1..-1]}Item>"
+        "List<#{@class_registry.get("#{capitalize(class_prefix)}Item")}>"
       else
         'List<dynamic>'
       end
-    when Hash then "#{class_prefix[0].upcase}#{class_prefix[1..-1]}"
+    when Hash then @class_registry.get(capitalize(class_prefix), context)
     else 'dynamic'
     end
   end
@@ -486,6 +699,17 @@ class DartCodeGenerator < BaseCodeGenerator
   end
 
   def language_specific_null
-    'null'
+    "null"
+  end
+end
+
+class ColorDetector
+  def initialize(value)
+    @value = value
+  end
+
+  def color?
+    # Check for 6-character (RGB) or 8-character (RGBA) hex color formats
+    @value.is_a?(String) && @value.match?(/^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/)
   end
 end
