@@ -89,7 +89,7 @@ class ResourceManifestProcessor
 
   def git_ignore(files)
     files.each do |file|
-      GitignoreManager.new(FilePath.project_root).add_items([file])
+      GitignoreManager.new(FilePath.project_root).add_items(["/#{file}"])
     end
   end
 
