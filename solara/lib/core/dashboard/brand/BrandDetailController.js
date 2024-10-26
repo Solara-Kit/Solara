@@ -109,7 +109,7 @@ class BrandDetailController {
         try {
             this.view.addBrandOverlay.style.display = 'none'
             this.view.header.style.display = 'flex';
-            this.view.updateAppNameTitle(`${configuraationsResult.brand.key} (${configuraationsResult.brand.name})`);
+            this.view.updateAppNameTitle(`${configuraationsResult.brand.name} - ${configuraationsResult.brand.key}`);
             await this.showSections(configuraationsResult);
             this.view.showIndex();
         } catch (error) {
