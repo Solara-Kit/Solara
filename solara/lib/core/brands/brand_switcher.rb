@@ -30,7 +30,7 @@ class BrandSwitcher
   def switch
     BrandFontSwitcher.new(@brand_key).switch
     
-    ResourceManifestSwitcher.new(@brand_key).switch
+    ResourceManifestSwitcher.new(@brand_key, ignore_health_check: @ignore_health_check).switch
     JsonManifestSwitcher.new(@brand_key).switch
 
     case @platform
@@ -51,13 +51,14 @@ class BrandSwitcher
 end
 
 class ResourceManifestSwitcher
-  def initialize(brand_key)
+  def initialize(brand_key, ignore_health_check:)
     @brand_key = brand_key
+    @ignore_health_check = ignore_health_check
   end
 
   def switch
     Solara.logger.start_step("Process resource manifest: #{FilePath.resources_manifest}")
-    brand_resource_copier = ResourceManifestProcessor.new(@brand_key)
+    brand_resource_copier = ResourceManifestProcessor.new(@brand_key, ignore_health_check: @ignore_health_check)
     brand_resource_copier.copy
     Solara.logger.debug("#{@brand_key} resources copied successfully according to the manifest: #{FilePath.resources_manifest}.")
     Solara.logger.end_step("Process resource manifest: #{FilePath.resources_manifest}")

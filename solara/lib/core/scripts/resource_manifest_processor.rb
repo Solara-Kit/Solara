@@ -2,8 +2,9 @@ require 'json'
 require 'fileutils'
 
 class ResourceManifestProcessor
-  def initialize(brand_key)
+  def initialize(brand_key, ignore_health_check:)
     @brand_key = brand_key
+    @ignore_health_check = ignore_health_check
     @manifest_file = FilePath.resources_manifest
     @config = load_manifest_file
   end
@@ -33,7 +34,7 @@ class ResourceManifestProcessor
 
     return skip_empty_paths(item) if empty_paths?(item)
 
-    check_mandatory_file(item, src, dst)
+    check_mandatory_file(item, src)
 
     if File.exist?(src)
       copy_file(src, dst)
@@ -104,10 +105,11 @@ class ResourceManifestProcessor
     Solara.logger.debug("Skipped (empty source or destination) for #{@brand_key}: #{item['source']} -> #{item['destination']}")
   end
 
-  def check_mandatory_file(item, src, dst)
+  def check_mandatory_file(item, src)
+    return if @ignore_health_check
+    
     if item['mandatory'] && !File.exist?(src)
-      Solara.logger.fatal("Mandatory resource file/folder not found for #{@brand_key}: #{src}. Please add the resource or mark it as not mandatory in #{FilePath.resources_manifest}.")
-      exit 1
+      raise "Mandatory resource file/folder not found for #{@brand_key}: #{src}. Please add the resource or mark it as not mandatory in #{FilePath.resources_manifest}."
     end
 
   end
@@ -134,8 +136,7 @@ class ResourceManifestProcessor
 
   def validate_manifest_file_existence
     unless File.exist?(@manifest_file)
-      Solara.logger.fatal("Brand switch copy manifest not found for #{@brand_key}: #{@manifest_file}")
-      exit 1
+      raise "Resources manifest not found for #{@brand_key}: #{@manifest_file}"
     end
   end
 
@@ -143,8 +144,7 @@ class ResourceManifestProcessor
     begin
       JSON.parse(File.read(@manifest_file))
     rescue JSON::ParserError => e
-      Solara.logger.fatal("Invalid brand switch copy manifest for #{@brand_key}: #{e.message}")
-      exit 1
+      raise "Invalid resources manifest for #{@brand_key}: #{e.message}"
     end
   end
 

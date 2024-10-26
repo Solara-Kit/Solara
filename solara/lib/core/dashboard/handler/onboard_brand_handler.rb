@@ -26,18 +26,6 @@ class OnboardBrandHandler < BaseHandler
             end
             res.content_type = 'application/json'
         end
-
-        def onboard_brand(brand_name, brand_key, clone_brand_key = nil)
-            if BrandsManager.instance.exists(brand_key)
-                return { success: false, message: "Brand with key (#{brand_key}) already added!" }
-            end
-            SolaraManager.new.onboard(brand_key, brand_name, clone_brand_key: clone_brand_key, open_dashboard: false)
-            { success: true, message: "Brand added successfully" }
-        rescue StandardError => e
-            Solara.logger.failure("Error adding brand: #{e.message}")
-            raise
-        end
-
     end
 
     def onboard_brand(brand_name, brand_key, clone_brand_key = nil)
@@ -46,8 +34,5 @@ class OnboardBrandHandler < BaseHandler
         end
         SolaraManager.new.onboard(brand_key, brand_name, clone_brand_key: clone_brand_key, open_dashboard: false)
         { success: true, message: "Brand added successfully" }
-    rescue StandardError => e
-        Solara.logger.failure("Error adding brand: #{e.message}")
-        raise
     end
 end
