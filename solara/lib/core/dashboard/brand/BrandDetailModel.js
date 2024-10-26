@@ -10,6 +10,7 @@ class BrandDetailModel {
     constructor() {
         this.localSource = new BrandLocalSource();
         this.remoteSource = new BrandRemoteSource();
+        this.isCurrentBrand = false;
 
         this.brandKey = this.getQueryFromUrl('brand_key');
 
