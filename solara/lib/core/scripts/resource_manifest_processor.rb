@@ -107,7 +107,7 @@ class ResourceManifestProcessor
 
   def check_mandatory_file(item, src)
     return if @ignore_health_check
-    
+
     if item['mandatory'] && !File.exist?(src)
       raise "Mandatory resource file/folder not found for #{@brand_key}: #{src}. Please add the resource or mark it as not mandatory in #{FilePath.resources_manifest}."
     end
