@@ -12,7 +12,7 @@ class BrandOnboarder
     end
 
     def onboard
-        if @clone_brand_key.nil? || @clone_brand_key.empty?
+        if @clone_brand_key.nil? || @clone_brand_key.strip.empty?
             generate_brand_template
         else
             clone_brand
