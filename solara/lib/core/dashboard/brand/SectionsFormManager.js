@@ -1,7 +1,6 @@
 import '../component/EditJsonSheet.js';
 
 class SectionsFormManager {
-
     constructor() {
         this.sections = [];
         this.sectionsContainer = document.getElementById('sections');
@@ -49,7 +48,6 @@ class SectionsFormManager {
         })
         return Array.from(data);
     }
-
 }
 
 class SectionItemManager {
@@ -140,13 +138,13 @@ class SectionItemManager {
                     itemValue.type = 'color';
                     itemValue.className = 'card-value';
                     itemValue.value = v;
-                    itemValue.onchange = () => this.updateValue(obj, k, itemValue.value);
+                    itemValue.onchange = () => this.updateValue(obj, k, itemValue.value, typeof v);
                     cardValueContainer.appendChild(itemValue);
                 } else {
                     const itemValue = document.createElement('textarea');
                     itemValue.className = 'card-value';
                     itemValue.value = v;
-                    itemValue.onchange = () => this.updateValue(obj, k, itemValue.value);
+                    itemValue.onchange = () => this.updateValue(obj, k, itemValue.value, typeof v);
                     cardValueContainer.appendChild(itemValue);
                 }
 
@@ -165,8 +163,7 @@ class SectionItemManager {
     }
 
     isColorValue(value) {
-        // Check if the value is a valid color (hex with opacity, RGBA, or RGB)
-        const hexPattern = /^#([0-9A-F]{3}){1,2}([0-9A-F]{2})?$/i; // 3, 6, or 8 hex digits
+        const hexPattern = /^#([0-9A-F]{3}){1,2}([0-9A-F]{2})?$/i;
         const rgbaPattern = /^rgba?\(\s*(\d{1,3}\s*,\s*){2}\d{1,3}\s*,?\s*(0|1|0?\.\d+|1?\.\d+)\s*\)$/;
 
         return hexPattern.test(value) || rgbaPattern.test(value);
@@ -182,14 +179,35 @@ class SectionItemManager {
         this.notifyChange()
     }
 
-    updateValue(obj, key, value) {
+    updateValue(obj, key, value, originalType) {
         try {
-            obj[key] = JSON.parse(value);
+            // Handle different types based on the original value's type
+            switch (originalType) {
+                case 'string':
+                    obj[key] = String(value);
+                    break;
+                case 'number':
+                    // If the original was a number, keep it number
+                    if (!isNaN(value) || value === '') {
+                        obj[key] = Number(value);
+                    }
+                    break;
+                case 'boolean':
+                    obj[key] = value.toLowerCase() === 'true';
+                    break;
+                default:
+                    // Try to parse as JSON, fallback to string if it fails
+                    try {
+                        obj[key] = JSON.parse(value);
+                    } catch {
+                        obj[key] = value;
+                    }
+            }
         } catch {
             obj[key] = value;
         }
         this.displayJSONCards();
-        this.notifyChange()
+        this.notifyChange();
     }
 
     confirmDeleteProperty(obj, key) {
@@ -227,6 +245,5 @@ class SectionItemManager {
         this.onChange(this.section, this.container)
     }
 }
-
 
 export default SectionsFormManager;
