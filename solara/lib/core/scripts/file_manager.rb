@@ -5,23 +5,19 @@ class FileManager
         source_path = Pathname.new(source_dir).expand_path
         destination_path = Pathname.new(destination_dir).expand_path
 
-        if Dir.exist?(source_path)
-          Dir.glob(source_path.join('*')).each do |item|
-            relative_path = Pathname.new(item).relative_path_from(source_path).to_s
-            destination_item_path = destination_path.join(relative_path)
+        Dir.glob(source_path.join('*')).each do |item|
+        relative_path = Pathname.new(item).relative_path_from(source_path).to_s
+        destination_item_path = destination_path.join(relative_path)
 
-            if File.directory?(item)
-              FileUtils.mkdir_p(destination_item_path)
-              FileUtils.cp_r(item + '/.', destination_item_path) # Ensure to copy contents
-            else
-              FileUtils.mkdir_p(destination_item_path.dirname) # Create parent directory
-              FileUtils.cp(item, destination_item_path)
-            end
-
-            Solara.logger.debug("🚗 Copied #{relative_path} \n\t↑ From: #{source_path} \n\t↓ To:   #{destination_path}")
-          end
+        if File.directory?(item)
+            FileUtils.mkdir_p(destination_item_path)
+            FileUtils.cp_r(item + '/.', destination_item_path) # Ensure to copy contents
         else
-          Solara.logger.failure("#{source_path} not found!")
+            FileUtils.mkdir_p(destination_item_path.dirname) # Create parent directory
+            FileUtils.cp(item, destination_item_path)
+        end
+
+        Solara.logger.debug("🚗 Copied #{relative_path} \n\t↑ From: #{source_path} \n\t↓ To:   #{destination_path}")
         end
       end
 

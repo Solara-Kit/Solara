@@ -79,7 +79,6 @@ class JsonManifestProcessor
 
   def process_json_file(file_path, class_name, custom_types, is_manifest_file)
     begin
-      puts "Processing #{is_manifest_file ? 'manifest' : 'additional'} file: #{file_path}"
       json_content = JSON.parse(File.read(file_path))
       code_generator = CodeGenerator.new(
         json: json_content,
@@ -129,7 +128,6 @@ class JsonManifestProcessor
   end
 
   def write_to_file(output, content)
-    puts "generate_code: output = #{output}, content = #{content}"
     File.write(output, content)
     Solara.logger.debug("Generated #{output}")
   rescue StandardError => e
