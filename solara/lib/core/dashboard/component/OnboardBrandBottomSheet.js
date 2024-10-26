@@ -72,6 +72,7 @@ class OnboardBrandBottomSheet extends HTMLElement {
             border-radius: 3.5px;
             font-size: 11.2px;
             background-color: var(--background-color);
+            color: var(--text-color);
         }
         .tooltip {
             position: relative;
