@@ -111,7 +111,7 @@ class SectionItemManager {
 
         const isArray = Array.isArray(obj)
 
-        for (const [k, v] of Object.entries(obj)) {
+       for (const [k, v] of Object.entries(obj)) {
             const item = document.createElement('div');
 
             const cardValueContainer = document.createElement('div');
@@ -133,7 +133,51 @@ class SectionItemManager {
                 item.className = 'card-item';
                 itemKey.textContent = k.replace(/_/g, ' ')
 
-                if (this.isColorValue(v)) {
+                if (typeof v === 'boolean') {
+                    // Create a container for the entire boolean input
+                    const booleanContainer = document.createElement('div');
+                    booleanContainer.className = 'boolean-container';
+
+                    const checkboxContainer = document.createElement('div');
+                    checkboxContainer.className = 'card-value checkbox-container';
+
+                    const itemValue = document.createElement('input');
+                    itemValue.type = 'checkbox';
+                    itemValue.className = 'card-value checkbox';
+                    itemValue.checked = v;
+
+                    const valueLabel = document.createElement('span');
+                    valueLabel.className = 'checkbox-value';
+                    valueLabel.textContent = v.toString();
+
+                    const updateValue = () => {
+                        const newValue = !itemValue.checked;
+                        itemValue.checked = newValue;
+                        valueLabel.textContent = newValue.toString();
+                        this.updateValue(obj, k, newValue, typeof v);
+                    };
+
+                    // Add click handlers to both container and checkbox
+                    booleanContainer.onclick = (e) => {
+                        if (e.target !== itemValue) { // Prevent double-toggle when clicking checkbox
+                            updateValue();
+                        }
+                    };
+
+                    itemValue.onchange = () => {
+                        valueLabel.textContent = itemValue.checked.toString();
+                        this.updateValue(obj, k, itemValue.checked, typeof v);
+                    };
+
+                    checkboxContainer.appendChild(itemValue);
+                    checkboxContainer.appendChild(valueLabel);
+
+                    // Move the key inside the boolean container
+                    booleanContainer.appendChild(itemKey);
+                    booleanContainer.appendChild(checkboxContainer);
+
+                    cardValueContainer.appendChild(booleanContainer);
+                } else if (this.isColorValue(v)) {
                     const itemValue = document.createElement('input');
                     itemValue.type = 'color';
                     itemValue.className = 'card-value';
