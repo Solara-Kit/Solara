@@ -1,5 +1,5 @@
 {
-    "description": "This file specifies the JSON files that can be optionally generated for the target platform code.",
+    "description": "The JSON Manifest is intended to specify the files you need to customize its generated code",
     "files": [
         {
             "fileName": "",
