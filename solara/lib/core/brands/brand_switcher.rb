@@ -67,39 +67,72 @@ class ResourceManifestSwitcher
 end
 
 class JsonManifestSwitcher
+  PLATFORM_CONFIGS = {
+    Platform::Flutter => {
+      language: Language::Dart,
+      output_path: :flutter_lib_artifacts
+    },
+    Platform::IOS => {
+      language: Language::Swift,
+      output_path: :ios_project_root_artifacts
+    },
+    Platform::Android => {
+      language: Language::Kotlin,
+      output_path: :android_project_java_artifacts
+    }
+  }.freeze
+
   def initialize(brand_key)
     @brand_key = brand_key
-    @manifest_path = FilePath.brand_json_dir(brand_key)
+    @brand_manifest_path = FilePath.brand_json_dir(brand_key)
+    @platform = SolaraSettingsManager.instance.platform
+    validate_inputs
   end
 
   def switch
-    Solara.logger.start_step("Process JSON manifest: #{@manifest_path}")
-
-
-    case SolaraSettingsManager.instance.platform
-    when Platform::Flutter
-      process_maifest(Language::Dart, FilePath.flutter_lib_artifacts)
-      process_maifest(Language::Dart, FilePath.brand_global_json_dir)
-    when Platform::IOS
-      process_maifest(Language::Swift, FilePath.ios_project_root_artifacts)
-      process_maifest(Language::Swift, FilePath.brand_global_json_dir)
-    when Platform::Android
-      process_maifest(Language::Kotlin, FilePath.android_project_java_artifacts )
-      process_maifest(Language::Kotlin, FilePath.brand_global_json_dir)
-    else
-      raise ArgumentError, "Invalid platform: #{@platform}"
+    with_logging do
+      process_manifests
     end
-
-    Solara.logger.end_step("Process JSON manifest: #{@manifest_path}")
   end
 
-  def process_maifest(language, output_path)
-    processor = JsonManifestProcessor.new(
-      @manifest_path,
+  private
+
+  def validate_inputs
+    raise ArgumentError, "Brand key cannot be nil" if @brand_key.nil?
+    raise ArgumentError, "Invalid platform: #{@platform}" unless PLATFORM_CONFIGS.key?(@platform)
+    raise ArgumentError, "Manifest path not found: #{@brand_manifest_path}" unless File.exist?(@brand_manifest_path)
+  end
+
+  def with_logging
+    log_message = "Process JSON manifest: #{@brand_manifest_path}"
+    Solara.logger.start_step(log_message)
+    yield
+    Solara.logger.end_step(log_message)
+  rescue StandardError => e
+    Solara.logger.error("Failed to process manifest: #{e.message}")
+    raise
+  end
+
+  def process_manifests
+    config = PLATFORM_CONFIGS[@platform]
+    output_path = FilePath.send(config[:output_path])
+
+    [
+      @brand_manifest_path,
+      FilePath.brand_global_json_dir
+    ].each do |manifest_path|
+      process_manifest(config[:language], manifest_path, output_path)
+    end
+  end
+
+  def process_manifest(language, manifest_path, output_path)
+    JsonManifestProcessor.new(
+      manifest_path,
       language,
       output_path
-    )
-    processor.process
+    ).process
+  rescue StandardError => e
+    raise StandardError, "Failed to process #{manifest_path}: #{e.message}"
   end
 end
 
