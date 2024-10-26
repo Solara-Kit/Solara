@@ -91,6 +91,7 @@ class BrandDetailController {
             const response = await this.model.fetchBrandDetails();
             await this.onLoadSections(response.result);
             const {isCurrentBrand, contentChanged} = await this.model.fetchCurrentBrand();
+            this.model.isCurrentBrand = isCurrentBrand
 
             if (isCurrentBrand) {
                 this.view.setupSyncBrandButton(contentChanged ? '#ff4136' : '#4A90E2');
@@ -109,7 +110,7 @@ class BrandDetailController {
         try {
             this.view.addBrandOverlay.style.display = 'none'
             this.view.header.style.display = 'flex';
-            this.view.updateAppNameTitle(`${configuraationsResult.brand.key} (${configuraationsResult.brand.name})`);
+            this.view.updateAppNameTitle(`${configuraationsResult.brand.name} - ${configuraationsResult.brand.key}`);
             await this.showSections(configuraationsResult);
             this.view.showIndex();
         } catch (error) {
@@ -159,7 +160,9 @@ class BrandDetailController {
         try {
             await this.model.saveSection(container.dataset.key, section.content);
             await this.checkBrandHealth();
-            await this.switchToBrand(true)
+            if (this.model.isCurrentBrand) {
+                await this.switchToBrand(true)
+            }
         } catch (error) {
             console.error('Error saving section:', error);
             alert(error.message);

@@ -3,16 +3,14 @@
     "files": [
         {
             "fileName": "",
-            "generate": {
-                "enabled": true,
-                "className": "",
-                "customClassNames": [
-                    {
-                        "generatedName": "",
-                        "customName": ""
-                    }
-                ]
-            }
+            "generate": true,
+            "parentClassName": "",
+            "customClassNames": [
+                {
+                    "originalName": "",
+                    "customName": ""
+                }
+            ]
         }
     ]
 }

@@ -18,9 +18,7 @@ class GitignoreManager
          ]
 
         if Platform.is_flutter || Platform.is_ios
-            items << FileManager.get_relative_path_to_root(FilePath.project_infoplist_string_catalog)
-            # The excluded InfoPlist.xcstrings maybe at the root. In this case we have to avoid ignoring the brands files.
-            items << '!solara/brand/brands/**/InfoPlist.xcstrings'
+            items << "/#{FileManager.get_relative_path_to_root(FilePath.project_infoplist_string_catalog)}"
         end
 
         GitignoreManager.new(FilePath.project_root).add_items(items)

@@ -10,48 +10,30 @@
                         "type": "string"
                     },
                     "generate": {
-                        "type": "object",
-                        "properties": {
-                            "enabled": {
-                                "type": "boolean"
-                            },
-                            "className": {
-                                "type": "string"
-                            },
-                            "customClassNames": {
-                                "type": "array",
-                                "items": {
-                                    "type": "object",
-                                    "properties": {
-                                        "generatedName": {
-                                            "type": "string"
-                                        },
-                                        "customName": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "required": [
-                                        "generatedName",
-                                        "customName"
-                                    ]
+                        "type": "boolean"
+                    },
+                    "parentClassName": {
+                        "type": "string"
+                    },
+                    "customClassNames": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "originalName": {
+                                    "type": "string"
+                                },
+                                "customName": {
+                                    "type": "string"
                                 }
-                            }
-                        },
-                        "required": [
-                            "enabled",
-                            "className",
-                            "customClassNames"
-                        ]
+                            },
+                            "required": ["originalName", "customName"]
+                        }
                     }
                 },
-                "required": [
-                    "fileName",
-                    "generate"
-                ]
+                "required": ["fileName", "generate", "parentClassName", "customClassNames"]
             }
         }
     },
-    "required": [
-        "files"
-    ]
+    "required": ["files"]
 }

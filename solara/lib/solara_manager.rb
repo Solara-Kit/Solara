@@ -32,24 +32,32 @@ class SolaraManager
     end
 
     def onboard(brand_key, brand_name, init: false, clone_brand_key: nil, open_dashboard: true, success_message: nil)
-        Solara.logger.header("Onboarding #{brand_key}")
+        begin
+            Solara.logger.header("Onboarding #{brand_key}")
 
-        if !init && BrandsManager.instance.exists(brand_key)
-            Solara.logger.fatal("Brand with key (#{brand_key}) already added to brands!")
-            return
-        end
+            if !init && BrandsManager.instance.exists(brand_key)
+                Solara.logger.fatal("Brand with key (#{brand_key}) already added to brands!")
+                return
+            end
 
-        BrandOnboarder.new(brand_key, brand_name, clone_brand_key: clone_brand_key).onboard
+            BrandOnboarder.new(brand_key, brand_name, clone_brand_key: clone_brand_key).onboard
 
-        switch(brand_key, ignore_health_check: true)
+            switch(brand_key, ignore_health_check: true)
 
-        clone_message = clone_brand_key.nil? || clone_brand_key.empty? ? '.' : ", cloned from #{clone_brand_key}."
-        message = success_message || "Onboarded #{brand_key} successfully#{clone_message}"
-        Solara.logger.success(message)
 
-        if open_dashboard
-            Solara.logger.success("Openning the dashboard for #{brand_key} to complete its details.")
-            dashboard(brand_key)
+            clone_message = clone_brand_key.nil? || clone_brand_key.empty? ? '.' : ", cloned from #{clone_brand_key}."
+            message = success_message || "Onboarded #{brand_key} successfully#{clone_message}"
+            Solara.logger.success(message)
+
+            if open_dashboard
+                Solara.logger.success("Openning the dashboard for #{brand_key} to complete its details.")
+                dashboard(brand_key)
+            end
+        rescue => e
+            # Rollback this brand
+            offboard(brand_key, confirm: false)
+            Solara.logger.debug("Performed rollback for (#{brand_key}).")
+            raise e
         end
     end
 

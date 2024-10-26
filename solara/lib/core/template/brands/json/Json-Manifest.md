@@ -21,16 +21,14 @@ Each directory contains a `json_manifest.json` file with the following structure
     "files": [
         {
             "fileName": "",
-            "generate": {
-                "enabled": true,
-                "className": "",
-                "customClassNames": [
-                    {
-                        "generatedName": "",
-                        "customName": ""
-                    }
-                ]
-            }
+            "generate": true,
+            "parentClassName": "",
+            "customClassNames": [
+                {
+                    "originalName": "",
+                    "customName": ""
+                }
+            ]
         }
     ]
 }

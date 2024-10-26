@@ -1,7 +1,6 @@
 import '../component/EditJsonSheet.js';
 
 class SectionsFormManager {
-
     constructor() {
         this.sections = [];
         this.sectionsContainer = document.getElementById('sections');
@@ -49,7 +48,6 @@ class SectionsFormManager {
         })
         return Array.from(data);
     }
-
 }
 
 class SectionItemManager {
@@ -113,7 +111,7 @@ class SectionItemManager {
 
         const isArray = Array.isArray(obj)
 
-        for (const [k, v] of Object.entries(obj)) {
+       for (const [k, v] of Object.entries(obj)) {
             const item = document.createElement('div');
 
             const cardValueContainer = document.createElement('div');
@@ -135,18 +133,62 @@ class SectionItemManager {
                 item.className = 'card-item';
                 itemKey.textContent = k.replace(/_/g, ' ')
 
-                if (this.isColorValue(v)) {
+                if (typeof v === 'boolean') {
+                    // Create a container for the entire boolean input
+                    const booleanContainer = document.createElement('div');
+                    booleanContainer.className = 'boolean-container';
+
+                    const checkboxContainer = document.createElement('div');
+                    checkboxContainer.className = 'card-value checkbox-container';
+
+                    const itemValue = document.createElement('input');
+                    itemValue.type = 'checkbox';
+                    itemValue.className = 'card-value checkbox';
+                    itemValue.checked = v;
+
+                    const valueLabel = document.createElement('span');
+                    valueLabel.className = 'checkbox-value';
+                    valueLabel.textContent = v.toString();
+
+                    const updateValue = () => {
+                        const newValue = !itemValue.checked;
+                        itemValue.checked = newValue;
+                        valueLabel.textContent = newValue.toString();
+                        this.updateValue(obj, k, newValue, typeof v);
+                    };
+
+                    // Add click handlers to both container and checkbox
+                    booleanContainer.onclick = (e) => {
+                        if (e.target !== itemValue) { // Prevent double-toggle when clicking checkbox
+                            updateValue();
+                        }
+                    };
+
+                    itemValue.onchange = () => {
+                        valueLabel.textContent = itemValue.checked.toString();
+                        this.updateValue(obj, k, itemValue.checked, typeof v);
+                    };
+
+                    checkboxContainer.appendChild(itemValue);
+                    checkboxContainer.appendChild(valueLabel);
+
+                    // Move the key inside the boolean container
+                    booleanContainer.appendChild(itemKey);
+                    booleanContainer.appendChild(checkboxContainer);
+
+                    cardValueContainer.appendChild(booleanContainer);
+                } else if (this.isColorValue(v)) {
                     const itemValue = document.createElement('input');
                     itemValue.type = 'color';
                     itemValue.className = 'card-value';
                     itemValue.value = v;
-                    itemValue.onchange = () => this.updateValue(obj, k, itemValue.value);
+                    itemValue.onchange = () => this.updateValue(obj, k, itemValue.value, typeof v);
                     cardValueContainer.appendChild(itemValue);
                 } else {
                     const itemValue = document.createElement('textarea');
                     itemValue.className = 'card-value';
                     itemValue.value = v;
-                    itemValue.onchange = () => this.updateValue(obj, k, itemValue.value);
+                    itemValue.onchange = () => this.updateValue(obj, k, itemValue.value, typeof v);
                     cardValueContainer.appendChild(itemValue);
                 }
 
@@ -165,8 +207,7 @@ class SectionItemManager {
     }
 
     isColorValue(value) {
-        // Check if the value is a valid color (hex with opacity, RGBA, or RGB)
-        const hexPattern = /^#([0-9A-F]{3}){1,2}([0-9A-F]{2})?$/i; // 3, 6, or 8 hex digits
+        const hexPattern = /^#([0-9A-F]{3}){1,2}([0-9A-F]{2})?$/i;
         const rgbaPattern = /^rgba?\(\s*(\d{1,3}\s*,\s*){2}\d{1,3}\s*,?\s*(0|1|0?\.\d+|1?\.\d+)\s*\)$/;
 
         return hexPattern.test(value) || rgbaPattern.test(value);
@@ -182,14 +223,35 @@ class SectionItemManager {
         this.notifyChange()
     }
 
-    updateValue(obj, key, value) {
+    updateValue(obj, key, value, originalType) {
         try {
-            obj[key] = JSON.parse(value);
+            // Handle different types based on the original value's type
+            switch (originalType) {
+                case 'string':
+                    obj[key] = String(value);
+                    break;
+                case 'number':
+                    // If the original was a number, keep it number
+                    if (!isNaN(value) || value === '') {
+                        obj[key] = Number(value);
+                    }
+                    break;
+                case 'boolean':
+                    obj[key] = value.toLowerCase() === 'true';
+                    break;
+                default:
+                    // Try to parse as JSON, fallback to string if it fails
+                    try {
+                        obj[key] = JSON.parse(value);
+                    } catch {
+                        obj[key] = value;
+                    }
+            }
         } catch {
             obj[key] = value;
         }
         this.displayJSONCards();
-        this.notifyChange()
+        this.notifyChange();
     }
 
     confirmDeleteProperty(obj, key) {
@@ -227,6 +289,5 @@ class SectionItemManager {
         this.onChange(this.section, this.container)
     }
 }
-
 
 export default SectionsFormManager;
