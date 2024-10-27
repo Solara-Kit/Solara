@@ -72,22 +72,22 @@
         },
         {
             "source": "json/json_manifest.json",
-            "target": "android/json/",
+            "target": "android/json/android_json_manifest.json",
             "condition": "true"
         },
         {
             "source": "json/json_manifest.json",
-            "target": "ios/json/",
+            "target": "ios/json/ios_json_manifest.json",
             "condition": "true"
         },
         {
             "source": "json/Json-Manifest.md",
-            "target": "android/json/",
+            "target": "android/json/Json-Manifest.md",
             "condition": "true"
         },
         {
             "source": "json/Json-Manifest.md",
-            "target": "ios/json/",
+            "target": "ios/json/Json-Manifest.md",
             "condition": "true"
         },
         {
@@ -97,12 +97,12 @@
         },
         {
             "source": "json/json_manifest.json",
-            "target": "../../global/json",
+            "target": "../../global/json/global_json_manifest.json",
             "condition": "true"
         },
         {
             "source": "json/Json-Manifest.md",
-            "target": "../../global/json",
+            "target": "../../global/json/Json-Manifest.md",
             "condition": "true"
         },
         {

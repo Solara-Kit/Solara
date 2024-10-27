@@ -28,7 +28,7 @@ structure:
             json:
                 type: directory
                 contents:
-                    json_manifest.json:
+                    android_json_manifest.json:
                         type: file
                         validations:
                             - type: valid_json
@@ -63,7 +63,7 @@ structure:
             json:
                 type: directory
                 contents:
-                    json_manifest.json:
+                    ios_json_manifest.json:
                         type: file
                         validations:
                             - type: valid_json
@@ -94,7 +94,7 @@ structure:
             json:
                 type: directory
                 contents:
-                    json_manifest.json:
+                    global_json_manifest.json:
                         type: file
                         validations:
                             - type: valid_json

@@ -43,13 +43,13 @@ class BrandLocalSource {
         }
     }
 
-    async saveSection(key, configuration, brandKey) {
+    async saveSection(filename, configuration, brandKey) {
         if (this.savingInProgress) return;
         this.savingInProgress = true;
 
         const dataToSend = {
             brand_key: brandKey,
-            key: key,
+            filename: filename,
             data: configuration
         };
 

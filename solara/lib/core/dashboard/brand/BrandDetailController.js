@@ -158,7 +158,7 @@ class BrandDetailController {
         if (this.model.isRemote()) return
 
         try {
-            await this.model.saveSection(container.dataset.key, section.content);
+            await this.model.saveSection(container.dataset.filename, section.content);
             await this.checkBrandHealth();
             if (this.model.isCurrentBrand) {
                 await this.switchToBrand(true)

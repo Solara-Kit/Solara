@@ -212,7 +212,7 @@ class BaseCodeGenerator
   end
 
   def capitalize(string)
-    "#{string[0].upcase}#{string[1..-1]}"
+    StringCase.capitalize(string)
   end
 end
 

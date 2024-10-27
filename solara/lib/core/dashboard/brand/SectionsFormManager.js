@@ -22,7 +22,7 @@ class SectionsFormManager {
         const sectionElement = document.createElement('div');
         sectionElement.className = 'section';
 
-        sectionElement.dataset.key = section.key
+        sectionElement.dataset.filename = section.filename
         sectionElement.dataset.name = section.name
 
         const titleContainer = document.createElement('div');
@@ -35,7 +35,7 @@ class SectionsFormManager {
 
         sectionElement.appendChild(titleContainer);
 
-        sectionElement.id = section.key;
+        sectionElement.id = section.filename;
 
         this.sectionsContainer.appendChild(sectionElement);
 
@@ -61,7 +61,7 @@ class SectionItemManager {
     displayJSONCards() {
         let cardContent = this.container.querySelector('.card-content')
         if (cardContent !== null) this.container.innerHTML = ''
-        this.container.appendChild(this.createCard(this.section.content, 'root', null, this.section.key));
+        this.container.appendChild(this.createCard(this.section.content, 'root', null, this.section.filename));
     }
 
     createCard(obj, key, parent, cardTitle) {

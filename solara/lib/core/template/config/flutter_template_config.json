@@ -72,12 +72,12 @@
         },
         {
             "source": "json/json_manifest.json",
-            "target": "flutter/json/",
+            "target": "flutter/json/flutter_json_manifest.json",
             "condition": "true"
         },
         {
             "source": "json/Json-Manifest.md",
-            "target": "flutter/json/",
+            "target": "flutter/json/Json-Manifest.md",
             "condition": "true"
         },
         {
@@ -87,12 +87,12 @@
         },
         {
             "source": "json/json_manifest.json",
-            "target": "../../global/json",
+            "target": "../../global/json/global_json_manifest.json",
             "condition": "true"
         },
         {
             "source": "json/Json-Manifest.md",
-            "target": "../../global/json",
+            "target": "../../global/json/Json-Manifest.md",
             "condition": "true"
         },
         {

@@ -21,8 +21,8 @@ class BrandRemoteSource {
                 }
                 const content = await contentResponse.json();
                 return {
-                    key: config.key,
-                    name: config.name,
+                    filename: config.filename,
+                    name: this.snakeToCapitalizedSpaced(config.filename, 'ios'),
                     content: content
                 };
             });
@@ -34,6 +34,22 @@ class BrandRemoteSource {
             console.error('There was a problem with the fetch operation:', error);
             return null; // Return null in case of error
         }
+    }
+
+    // TODO: should be ecnapsulated
+    snakeToCapitalizedSpaced(
+        snakeCaseString,
+        exclude = '',
+        transform = (item) => item.charAt(0).toUpperCase() + item.slice(1)
+    ) {
+        // Split by underscores
+        const parts = snakeCaseString.split('_').map(item => {
+            // Return the item as-is if it matches the exclude value
+            return item === exclude ? item : transform(item);
+        });
+
+        // Join the parts with a space
+        return parts.join(' ');
     }
 
     async getBrandConfigurationsJsonFromDirectory(dirHandle) {

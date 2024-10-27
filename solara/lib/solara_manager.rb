@@ -40,7 +40,7 @@ class SolaraManager
                 return
             end
 
-            BrandOnboarder.new(brand_key, brand_name, clone_brand_key: clone_brand_key).onboard
+            BrandOnboarder.new.onboard(brand_key, brand_name, clone_brand_key: clone_brand_key)
 
             switch(brand_key, ignore_health_check: true)
 
@@ -76,6 +76,10 @@ class SolaraManager
     def doctor(brand_key = nil, print_logs: true)
         keys = brand_key.nil? || brand_key.empty? ? [] : [brand_key]
         DoctorManager.new.visit_brands(keys, print_logs: print_logs)
+    end
+
+    def sync_brand_with_template(brand_key)
+        BrandOnboarder.new.sync_with_template(brand_key)
     end
 
 end

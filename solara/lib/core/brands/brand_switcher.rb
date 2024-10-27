@@ -16,6 +16,7 @@ class BrandSwitcher
   def start
     Solara.logger.header("Switching to #{@brand_key}")
 
+    BrandOnboarder.new.sync_with_template(@brand_key)
     @health_checker.check_health
     BrandsManager.instance.save_current_brand(@brand_key)
     @artifacts_switcher.switch

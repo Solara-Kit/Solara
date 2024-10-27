@@ -7,14 +7,14 @@ class EditSectionHandler < BaseHandler
                 begin
                     request_payload = JSON.parse(req.body)
                     brand_key = request_payload['brand_key']
-                    key = request_payload['key']
+                    filename = request_payload['filename']
                     data = request_payload['data']
 
-                    update_section(key, data, brand_key)
+                    update_section(filename, data, brand_key)
                     set_current_brand_content_changed(brand_key, true)
 
                     res.status = 200
-                    res.body = JSON.generate({ success: true, message: "Configuration for #{key} updated successfully" })
+                    res.body = JSON.generate({ success: true, message: "Configuration for #{filename} updated successfully" })
                     res.content_type = 'application/json'
                 rescue JSON::ParserError => e
                     handle_error(res, e, "Invalid JSON in request body", 400)
@@ -27,20 +27,8 @@ class EditSectionHandler < BaseHandler
         end
     end
 
-    def update_section(key, data, brand_key)
-        template = BrandConfigurationsManager.new(brand_key).template_with_key(key)
-
-        path = template[:path]
-        
-        if File.exist?(path)
-            File.write(path, JSON.pretty_generate(data))
-            Solara.logger.debug("Updated Config for #{path}: #{data}")
-        else
-            raise "Config file not found: #{path}"
-        end
-    rescue StandardError => e
-        Solara.logger.failure("Error updating section: #{e.message}")
-        raise
+    def update_section(filename, data, brand_key)
+        BrandConfigUpdater.new.update(filename, data, brand_key)
     end
 
     def set_current_brand_content_changed(brand_key, changed)

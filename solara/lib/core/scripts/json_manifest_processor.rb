@@ -19,7 +19,7 @@ class JsonManifestProcessor
   private
 
   def read_manifest
-    manifest_path = File.join(@json_path, 'json_manifest.json')
+    manifest_path = File.join(@json_path, "#{SolaraSettingsManager.instance.platform}_json_manifest.json")
     JSON.parse(File.read(manifest_path))
   rescue JSON::ParserError => e
     Solara.logger.debug("Error parsing manifest JSON: #{e.message}")

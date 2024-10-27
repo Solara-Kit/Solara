@@ -27,11 +27,12 @@ class GitignoreManager
         
     def add_items(items)
         items.each do |item|
-            add_item(FileManager.get_relative_path_to_root(item))
+            add_item(item.start_with?('/') ? item : FileManager.get_relative_path_to_root(item))
         end
     end
 
     def add_item(item)
+        puts item
         existing_items = read_gitignore
 
         if existing_items.include?(item)

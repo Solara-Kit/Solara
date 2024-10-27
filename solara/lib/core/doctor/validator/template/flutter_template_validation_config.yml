@@ -5,7 +5,7 @@ structure:
                json:
                     type: directory
                     contents:
-                        json_manifest.json:
+                        flutter_json_manifest.json:
                             type: file
                             validations:
                                 - type: valid_json
@@ -89,7 +89,7 @@ structure:
             json:
                 type: directory
                 contents:
-                    json_manifest.json:
+                    global_json_manifest.json:
                         type: file
                         validations:
                             - type: valid_json
