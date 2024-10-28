@@ -2,7 +2,7 @@
 
 ## Version 0.7.2
 
-- Bug fixe: user-defined JSON files not displaying in dashboard
+- Bug fix: user-defined JSON files not displaying in dashboard
 
 ## Version 0.7.1
 
