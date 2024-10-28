@@ -5,7 +5,7 @@ class BrandConfigurationsManager
     end
 
     def template_with_filename(filename)
-        templates.select { |section| section[:filename] === filename }.first
+        templates.select { |template| template[:filename] === filename }.first
     end
 
     def templates

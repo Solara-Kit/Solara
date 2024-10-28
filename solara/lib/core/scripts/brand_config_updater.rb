@@ -2,6 +2,10 @@ class BrandConfigUpdater
 
     def update(filename, data, brand_key)
         template = BrandConfigurationsManager.new(brand_key).template_with_filename(filename)
+        if template.nil?
+            Solara.logger.debug("Can't find tempate for filename: #{filename}, with brand key: #{brand_key}")
+            return
+        end
 
         path = template[:path]
         json = JSON.pretty_generate(data)
