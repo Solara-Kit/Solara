@@ -1,11 +1,17 @@
 # Changelog
 
+## Version 0.7.2
+
+- Bug fixe: user-defined JSON files not displaying in dashboard
+
 ## Version 0.7.1
-  - Bug fixes
+
+- Bug fixes
 
 ## Version 0.7.0
-  - Display user-defined JSON files in dashboard
-  - Add mechanism to sync existing brand with template changes
+
+- Display user-defined JSON files in dashboard
+- Add mechanism to sync existing brand with template changes
 
 ## Version 0.6.0
 
@@ -15,8 +21,9 @@
   - Removes need to manually add new files to manifest
   - Provides override capability when specific configuration needed
 - Add JSON manifest for generating platform-specific code from JSON files
-    - This commit introduces a JSON manifest that enables the generation of platform-specific code based on the provided JSON files. This
-      enhancement streamlines the development process and ensures better code organization for different platforms.
+  - This commit introduces a JSON manifest that enables the generation of platform-specific code based on the provided
+    JSON files. This
+    enhancement streamlines the development process and ensures better code organization for different platforms.
 - Disable mandatory resource checks in ResourceManifestProcessor during brand onboarding
 - Implement rollback mechanism if an error occurs during the onboarding process.
 - Optimize .gitignore: Use root-relative paths to avoid unintended ignores
