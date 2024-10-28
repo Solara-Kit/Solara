@@ -63,7 +63,8 @@ class JsonManifestProcessor
       file_name = File.basename(file_path)
       # Skip files that were already processed via manifest
       next if manifest_files.include?(file_name)
-      next if file_name == 'json_manifest.json'
+      ignored = %w[flutter_json_manifest.json android_json_manifest.json ios_json_manifest.json global_json_manifest.json]
+      next if ignored.any? { |item| item == file_name }
 
       class_name = derive_class_name(file_name)
       process_json_file(file_path, class_name, {}, false)
