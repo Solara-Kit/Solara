@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.7.0
+  - Display user-defined JSON files in dashboard
+  - Add mechanism to sync existing brand with template changes
+
 ## Version 0.6.0
 
 - Hybrid JSON processing with optional manifest configuration. Implement flexible JSON file handling that:
