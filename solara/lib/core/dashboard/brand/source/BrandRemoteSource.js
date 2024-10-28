@@ -5,7 +5,7 @@ class BrandRemoteSource {
     }
 
     async createNewBrandConfigurations() {
-        const url = 'https://raw.githubusercontent.com/Solara-Kit/Solara/refs/heads/develop/solara/lib/core/template/configurations.json';
+        const url = 'https://raw.githubusercontent.com/Solara-Kit/Solara/refs/heads/main/solara/lib/core/template/configurations.json';
 
         try {
             const response = await fetch(url);

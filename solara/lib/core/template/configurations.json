@@ -3,57 +3,57 @@
         {
             "filename": "brand_config.json",
             "filePath": "shared/brand_config.json",
-            "url": "https://raw.githubusercontent.com/Solara-Kit/Solara/refs/heads/develop/solara/lib/core/template/brands/shared/brand_config.json"
+            "url": "https://raw.githubusercontent.com/Solara-Kit/Solara/refs/heads/main/solara/lib/core/template/brands/shared/brand_config.json"
         },
         {
             "filename": "theme.json",
             "filePath": "shared/theme.json",
-            "url": "https://raw.githubusercontent.com/Solara-Kit/Solara/refs/heads/develop/solara/lib/core/template/brands/shared/theme.json"
+            "url": "https://raw.githubusercontent.com/Solara-Kit/Solara/refs/heads/main/solara/lib/core/template/brands/shared/theme.json"
         },
         {
             "filename": "android_config.json",
             "filePath": "android/android_config.json",
-            "url": "https://raw.githubusercontent.com/Solara-Kit/Solara/refs/heads/develop/solara/lib/core/template/brands/android/android_config.json"
+            "url": "https://raw.githubusercontent.com/Solara-Kit/Solara/refs/heads/main/solara/lib/core/template/brands/android/android_config.json"
         },
         {
             "filename": "android_signing.json",
             "filePath": "android/android_signing.json",
-            "url": "https://raw.githubusercontent.com/Solara-Kit/Solara/refs/heads/develop/solara/lib/core/template/brands/android/android_signing.json"
+            "url": "https://raw.githubusercontent.com/Solara-Kit/Solara/refs/heads/main/solara/lib/core/template/brands/android/android_signing.json"
         },
         {
             "filename": "ios_config.json",
             "filePath": "ios/ios_config.json",
-            "url": "https://raw.githubusercontent.com/Solara-Kit/Solara/refs/heads/develop/solara/lib/core/template/brands/ios/ios_config.json"
+            "url": "https://raw.githubusercontent.com/Solara-Kit/Solara/refs/heads/main/solara/lib/core/template/brands/ios/ios_config.json"
         },
         {
             "filename": "ios_signing.json",
             "filePath": "ios/ios_signing.json",
-            "url": "https://raw.githubusercontent.com/Solara-Kit/Solara/refs/heads/develop/solara/lib/core/template/brands/ios/ios_signing.json"
+            "url": "https://raw.githubusercontent.com/Solara-Kit/Solara/refs/heads/main/solara/lib/core/template/brands/ios/ios_signing.json"
         },
         {
             "filename": "InfoPlist.xcstrings",
             "filePath": "ios/InfoPlist.xcstrings",
-            "url": "https://raw.githubusercontent.com/Solara-Kit/Solara/refs/heads/develop/solara/lib/core/template/brands/ios/InfoPlist.xcstrings"
+            "url": "https://raw.githubusercontent.com/Solara-Kit/Solara/refs/heads/main/solara/lib/core/template/brands/ios/InfoPlist.xcstrings"
         },
         {
             "filename": "ios_json_manifest.json",
             "filePath": "ios/json/ios_json_manifest.json",
-            "url": "https://raw.githubusercontent.com/Solara-Kit/Solara/refs/heads/develop/solara/lib/core/template/brands/json/json_manifest.json"
+            "url": "https://raw.githubusercontent.com/Solara-Kit/Solara/refs/heads/main/solara/lib/core/template/brands/json/json_manifest.json"
         },
         {
             "filename": "android_json_manifest.json",
             "filePath": "android/json/android_json_manifest.json",
-            "url": "https://raw.githubusercontent.com/Solara-Kit/Solara/refs/heads/develop/solara/lib/core/template/brands/json/json_manifest.json"
+            "url": "https://raw.githubusercontent.com/Solara-Kit/Solara/refs/heads/main/solara/lib/core/template/brands/json/json_manifest.json"
         },
         {
             "filename": "flutter_json_manifest.json",
             "filePath": "flutter/json/flutter_json_manifest.json",
-            "url": "https://raw.githubusercontent.com/Solara-Kit/Solara/refs/heads/develop/solara/lib/core/template/brands/json/json_manifest.json"
+            "url": "https://raw.githubusercontent.com/Solara-Kit/Solara/refs/heads/main/solara/lib/core/template/brands/json/json_manifest.json"
         },
         {
             "filename": "global_json_manifest.json",
             "filePath": "../../global/json/global_json_manifest.json",
-            "url": "https://raw.githubusercontent.com/Solara-Kit/Solara/refs/heads/develop/solara/lib/core/template/brands/json/json_manifest.json"
+            "url": "https://raw.githubusercontent.com/Solara-Kit/Solara/refs/heads/main/solara/lib/core/template/brands/json/json_manifest.json"
         }
     ]
 }
