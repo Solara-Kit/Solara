@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.7.1
+  - Bug fixes
+
 ## Version 0.7.0
   - Display user-defined JSON files in dashboard
   - Add mechanism to sync existing brand with template changes
