@@ -25,7 +25,7 @@
             "items": {
                 "type": "object",
                 "properties": {
-                    "key": {
+                    "filename": {
                         "type": "string"
                     },
                     "name": {
@@ -37,7 +37,7 @@
                     }
                 },
                 "required": [
-                    "key",
+                    "filename",
                     "name",
                     "content"
                 ]

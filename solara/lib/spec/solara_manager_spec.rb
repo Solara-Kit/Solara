@@ -80,15 +80,16 @@ RSpec.describe SolaraManager do
       end
 
       it 'calls BrandOnboarder and switches to the new brand' do
-        expect(brand_onboarder_mock).to receive(:onboard)
+        expect(BrandOnboarder).to receive(:new).and_return(brand_onboarder_mock)
+        expect(brand_onboarder_mock).to receive(:onboard).with(brand_key, brand_name, clone_brand_key: nil)
         expect(manager).to receive(:switch).with(brand_key, ignore_health_check: true)
 
         manager.onboard(brand_key, brand_name)
       end
 
       it 'opens dashboard when open_dashboard is true' do
-        expect(BrandOnboarder).to receive(:new).with(brand_key, brand_name, clone_brand_key: nil).and_return(brand_onboarder_mock)
-        expect(brand_onboarder_mock).to receive(:onboard)
+        expect(BrandOnboarder).to receive(:new).and_return(brand_onboarder_mock)
+        expect(brand_onboarder_mock).to receive(:onboard).with(brand_key, brand_name, clone_brand_key: nil)
         expect(manager).to receive(:switch).with(brand_key, ignore_health_check: true)
         expect(manager).to receive(:dashboard).with(brand_key)
 
@@ -96,12 +97,21 @@ RSpec.describe SolaraManager do
       end
 
       it 'does not open dashboard when open_dashboard is false' do
-        expect(BrandOnboarder).to receive(:new).with(brand_key, brand_name, clone_brand_key: nil).and_return(brand_onboarder_mock)
-        expect(brand_onboarder_mock).to receive(:onboard)
+        expect(BrandOnboarder).to receive(:new).and_return(brand_onboarder_mock)
+        expect(brand_onboarder_mock).to receive(:onboard).with(brand_key, brand_name, clone_brand_key: nil)
         expect(manager).to receive(:switch).with(brand_key, ignore_health_check: true)
         expect(manager).not_to receive(:dashboard)
 
         manager.onboard(brand_key, brand_name, open_dashboard: false)
+      end
+
+      it 'passes clone_brand_key when provided' do
+        clone_key = 'source_brand'
+        expect(BrandOnboarder).to receive(:new).and_return(brand_onboarder_mock)
+        expect(brand_onboarder_mock).to receive(:onboard).with(brand_key, brand_name, clone_brand_key: clone_key)
+        expect(manager).to receive(:switch).with(brand_key, ignore_health_check: true)
+
+        manager.onboard(brand_key, brand_name, clone_brand_key: clone_key)
       end
     end
   end
