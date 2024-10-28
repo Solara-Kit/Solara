@@ -40,11 +40,13 @@ class TemplateManager
     end
 
     def templates
-      result = parse_configurations
-      collect_json_templates.each do |template|
-        result << template unless result.any? { |r| r['filename'] == template['filename'] }
+      result = parse_configurations.compact
+      user_defined_items = collect_user_defined_json.compact
+      user_defined_items.each do |user_defined_item|
+        next if result.any? { |r| r[:filename] == user_defined_item[:filename] }
+        result << user_defined_item
       end
-      result.compact
+      result
     rescue StandardError => e
       Solara.logger.error("Failed to generate templates: #{e.message}")
       []
@@ -71,7 +73,7 @@ class TemplateManager
       []
     end
 
-    def collect_json_templates
+    def collect_user_defined_json
       directories = [
         FilePath.brand_global_json_dir,
         FilePath.brand_json_dir(@brand_key)

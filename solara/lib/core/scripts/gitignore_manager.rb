@@ -32,7 +32,6 @@ class GitignoreManager
     end
 
     def add_item(item)
-        puts item
         existing_items = read_gitignore
 
         if existing_items.include?(item)
