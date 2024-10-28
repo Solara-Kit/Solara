@@ -1,5 +1,6 @@
 Dir.glob("#{__dir__}/../scripts/platform/android/*.rb").each { |file| require file }
 Dir.glob("#{__dir__}/../scripts/platform/ios/*.rb").each { |file| require file }
+Dir.glob("#{__dir__}/../scripts/code_generator/*.rb").each { |file| require file }
 
 class BrandConfigManager
     def initialize(brand_key)
