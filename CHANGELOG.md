@@ -2,6 +2,12 @@
 
 ## Version 0.7.2
 
+Refactor Code Generator: Address Issues and Limitations of Previous Implementation
+    - Redesigned the code generator to enhance reliability and performance.
+    - Resolved multiple issues associated with the old approach.
+
+## Version 0.7.2
+
 - Bug fix: user-defined JSON files not displaying in dashboard
 
 ## Version 0.7.1
