@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    solara (0.7.2)
+    solara (0.7.3)
       cgi (~> 0.4.1)
       colorize (~> 1.1.0)
       json-schema (~> 4.3.1)
