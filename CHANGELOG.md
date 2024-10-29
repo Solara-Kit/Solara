@@ -1,6 +1,10 @@
 # Changelog
 
-## Version 0.7.2
+## Version 0.7.4
+
+- CodeGenerator bug fix: the list items are referencing the same data
+
+## Version 0.7.3
 
 Refactor Code Generator: Address Issues and Limitations of Previous Implementation
     - Redesigned the code generator to enhance reliability and performance.
