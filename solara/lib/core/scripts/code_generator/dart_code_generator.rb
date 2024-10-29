@@ -14,7 +14,7 @@ class DartCodeGenerator
 
   private
 
-  def generate_class(json_obj, class_name)
+  def generate_class(json_obj, class_name, list_items = nil)
     @registry.register(class_name, class_name)
     class_name = @registry.get_class_name(class_name, class_name)
     return if @generated_classes.any? { |c| c.include?("class #{class_name}") }
@@ -34,18 +34,59 @@ class DartCodeGenerator
       if value.is_a?(Hash)
         generate_class(value, nested_class_name)
         companion_values << "static final #{key}Value = #{nested_class_name}.instance;"
+        instance_values << "#{key}: #{nested_class_name}.instance"
       elsif value.is_a?(Array) && !value.empty? && value.first.is_a?(Hash)
-        generate_class(value.first, nested_class_name)
+        generate_class(value.first, nested_class_name, value)
         type = "List<#{nested_class_name}>"
-        list_values = value.map { |_| "#{nested_class_name}.instance" }
-        companion_values << "static final #{key}Value = <#{nested_class_name}>[#{list_values.join(", ")}];"
+        companion_values << "static final #{key}Value = #{nested_class_name}.instances;"
+        instance_values << "#{key}: #{nested_class_name}.instances"
       else
         companion_values << "static final #{key}Value = #{dart_value(value)};"
+        instance_values << "#{key}: #{key}Value"
       end
 
       properties << "final #{type} #{key};"
       constructor_params << "required this.#{key}"
-      instance_values << "#{key}: #{key}Value"
+    end
+
+    static_instances = if list_items
+      items_code = list_items.map.with_index do |item, index|
+        values = item.map do |key, value|
+          if value.is_a?(Hash)
+            nested_class_name = "#{class_name}#{StringCase.capitalize(key)}"
+            @registry.register(nested_class_name, nested_class_name)
+            nested_class_name = @registry.get_class_name(nested_class_name, nested_class_name)
+            "#{key}: #{nested_class_name}.instance"
+          elsif value.is_a?(Array) && !value.empty? && value.first.is_a?(Hash)
+            nested_class_name = "#{class_name}#{StringCase.capitalize(key)}"
+            @registry.register(nested_class_name, nested_class_name)
+            nested_class_name = @registry.get_class_name(nested_class_name, nested_class_name)
+            "#{key}: #{nested_class_name}.instances"
+          else
+            "#{key}: #{dart_value(value)}"
+          end
+        end.join(",\n              ")
+        "    static final instance#{index + 1} = #{class_name}(\n              #{values}\n            );"
+      end.join("\n")
+
+      instances_list = (1..list_items.length).map { |i| "instance#{i}" }.join(", ")
+
+      <<~DART
+        #{items_code}
+
+        static final instances = <#{class_name}>[#{instances_list}];
+      DART
+    else
+      <<~DART
+        static #{class_name}? _instance;
+
+        static #{class_name} get instance {
+          _instance ??= #{class_name}(
+            #{instance_values.join(",\n            ")}
+          );
+          return _instance!;
+        }
+      DART
     end
 
     class_code = <<~DART
@@ -54,16 +95,9 @@ class DartCodeGenerator
 
         const #{class_name}({#{constructor_params.join(", ")}});
 
-        static #{class_name}? _instance;
-
         #{companion_values.join("\n    ")}
 
-        static #{class_name} get instance {
-          _instance ??= #{class_name}(
-            #{instance_values.join(",\n            ")}
-          );
-          return _instance!;
-        }
+        #{static_instances}
       }
     DART
 

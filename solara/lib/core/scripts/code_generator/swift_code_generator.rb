@@ -1,26 +1,27 @@
 class SwiftCodeGenerator
-    def initialize(json, parent_class_name, registry = nil)
-      @json = json
-      @parent_class_name = parent_class_name
-      @registry = registry || ClassNameRegistry.new
-      @generated_classes = []
-    end
+  def initialize(json, parent_class_name, registry = nil)
+    @json = json
+    @parent_class_name = parent_class_name
+    @registry = registry || ClassNameRegistry.new
+    @generated_classes = []
+  end
 
-    def generate
-      imports = "import UIKit\n\n"
-      generate_class(@json, @parent_class_name)
-      imports + @generated_classes.reverse.join("\n\n")
-    end
+  def generate
+    imports = "import UIKit\n\n"
+    generate_class(@json, @parent_class_name)
+    imports + @generated_classes.reverse.join("\n\n")
+  end
 
-    private
+  private
 
-    def generate_class(json_obj, class_name)
+    def generate_class(json_obj, class_name, list_items = nil)
       @registry.register(class_name, class_name)
       class_name = @registry.get_class_name(class_name, class_name)
       return if @generated_classes.any? { |c| c.include?("struct #{class_name}") }
 
       properties = []
       static_values = []
+      instance_values = []
 
       json_obj.each do |key, value|
         nested_class_name = "#{class_name}#{StringCase.capitalize(key)}"
@@ -32,34 +33,69 @@ class SwiftCodeGenerator
         if value.is_a?(Hash)
           generate_class(value, nested_class_name)
           static_values << "private static let #{key}Value = #{nested_class_name}.shared"
+          instance_values << "#{key}: #{nested_class_name}.shared"
         elsif value.is_a?(Array) && !value.empty? && value.first.is_a?(Hash)
-          generate_class(value.first, nested_class_name)
+          generate_class(value.first, nested_class_name, value)
           type = "[#{nested_class_name}]"
-          list_values = value.map { |_| "#{nested_class_name}.shared" }
-          static_values << "private static let #{key}Value = [#{list_values.join(", ")}]"
+          static_values << "private static let #{key}Value = #{nested_class_name}.instances"
+          instance_values << "#{key}: #{nested_class_name}.instances"
         else
           static_values << "private static let #{key}Value = #{swift_value(value)}"
+          instance_values << "#{key}: #{key}Value"
         end
 
         properties << "let #{key}: #{type}"
       end
 
+      static_instances = if list_items
+        items_code = list_items.map.with_index do |item, index|
+          values = item.map do |key, value|
+            if value.is_a?(Hash)
+              nested_class_name = "#{class_name}#{StringCase.capitalize(key)}"
+              @registry.register(nested_class_name, nested_class_name)
+              nested_class_name = @registry.get_class_name(nested_class_name, nested_class_name)
+              "#{key}: #{nested_class_name}.shared"
+            elsif value.is_a?(Array) && !value.empty? && value.first.is_a?(Hash)
+              nested_class_name = "#{class_name}#{StringCase.capitalize(key)}"
+              @registry.register(nested_class_name, nested_class_name)
+              nested_class_name = @registry.get_class_name(nested_class_name, nested_class_name)
+              "#{key}: #{nested_class_name}.instances"
+            else
+              "#{key}: #{swift_value(value)}"
+            end
+          end.join(",\n                ")
+          "    private static let instance#{index + 1} = #{class_name}(\n                #{values}\n            )"
+        end.join("\n")
+
+        instances_list = (1..list_items.length).map { |i| "instance#{i}" }.join(", ")
+
+        <<~SWIFT
+          #{items_code}
+
+          static let instances: [#{class_name}] = [#{instances_list}]
+        SWIFT
+      else
+        <<~SWIFT
+          private static var _shared: #{class_name}?
+
+          #{static_values.join("\n    ")}
+
+          static var shared: #{class_name} {
+              if _shared == nil {
+                  _shared = #{class_name}(
+                      #{instance_values.join(",\n                    ")}
+                  )
+              }
+              return _shared!
+          }
+        SWIFT
+      end
+
       class_code = <<~SWIFT
         struct #{class_name} {
-            #{properties.join("\n    ")}
+            #{properties.join("\n      ")}
 
-            private static var _shared: #{class_name}?
-
-            #{static_values.join("\n    ")}
-
-            static var shared: #{class_name} {
-                if _shared == nil {
-                    _shared = #{class_name}(
-                        #{json_obj.keys.map { |key| "#{key}: #{key}Value" }.join(",\n                      ")}
-                    )
-                }
-                return _shared!
-            }
+            #{static_instances}
         }
       SWIFT
 
@@ -105,4 +141,4 @@ class SwiftCodeGenerator
       return "nil" if value.nil?
       value.to_s
     end
-end
+  end
