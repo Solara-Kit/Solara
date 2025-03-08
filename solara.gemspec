@@ -28,7 +28,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'webrick', '~> 1.8.1'
   spec.add_dependency 'colorize', '~> 1.1.0'
   spec.add_dependency 'json-schema', '~> 4.3.1'
-  spec.add_dependency 'xcodeproj', '~> 1.25.0'
+  spec.add_dependency 'xcodeproj', '~> 1.27.0'
   spec.add_dependency 'cgi', '~> 0.4.1'
   spec.add_dependency 'plist', '~> 3.7.1'
 
