@@ -53,8 +53,31 @@ project.ext {
 
     private
 
+    def smart_write(file_path, new_content)
+        return unless File.exist?(file_path)
+        
+        current_content = File.read(file_path)
+        if normalize_content(new_content) != normalize_content(current_content)
+            File.write(file_path, new_content)
+            Solara.logger.debug("Updated #{file_path}")
+            return true
+        end
+        
+        Solara.logger.debug("No changes needed for #{file_path}")
+        false
+    end
+
+    def normalize_content(content)
+        # Remove empty lines and normalize whitespace
+        content.lines
+              .map(&:strip)
+              .reject(&:empty?)
+              .join("\n")
+    end
+
     def update_gradle(gradle_file, gradle_content)
         properties_loader = @is_kotlin_gradle ? KOTLIN_PROPERTIES_LOADER : GROOVY_PROPERTIES_LOADER
+        original_content = gradle_content.dup
 
         if @is_kotlin_gradle
             # Add imports for Kotlin
@@ -91,8 +114,10 @@ project.ext {
         )
 
         gradle_content.sub!(android_block_regex, updated_android_block)
-        File.write(gradle_file, gradle_content)
-        Solara.logger.debug("Updated #{gradle_file} (#{@is_kotlin_gradle ? 'Kotlin' : 'Groovy'}) to use brand.properties")
+        
+        if smart_write(gradle_file, gradle_content)
+            Solara.logger.debug("Updated #{gradle_file} (#{@is_kotlin_gradle ? 'Kotlin' : 'Groovy'}) to use brand.properties")
+        end
     end
 
     def add_source_sets(gradle_file)
@@ -124,8 +149,7 @@ project.ext {
                                end
                            end
 
-        File.write(gradle_file, modified_content)
-        Solara.logger.debug("Source sets configuration updated successfully.")
+        smart_write(gradle_file, modified_content)
     end
 
     def generate_source_sets(source_sets_string)
@@ -182,12 +206,7 @@ project.ext {
             modified_content.sub!(/(\s*android\s*\{)/) { "#{$1}\n    #{new_config.strip}" }
         end
 
-        if content != modified_content
-            File.write(gradle_file, modified_content)
-            Solara.logger.debug("Keystore configuration updated successfully.")
-        else
-            Solara.logger.debug("No changes were necessary for keystore configuration.")
-        end
+        smart_write(gradle_file, modified_content)
     end
 
     def generate_keystore_config
