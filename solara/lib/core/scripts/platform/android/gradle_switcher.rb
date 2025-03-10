@@ -53,16 +53,16 @@ project.ext {
 
     private
 
-    def smart_write(file_path, new_content)
+    def write_if_needed(file_path, new_content)
         return unless File.exist?(file_path)
-        
+
         current_content = File.read(file_path)
         if normalize_content(new_content) != normalize_content(current_content)
             File.write(file_path, new_content)
             Solara.logger.debug("Updated #{file_path}")
             return true
         end
-        
+
         Solara.logger.debug("No changes needed for #{file_path}")
         false
     end
@@ -114,8 +114,8 @@ project.ext {
         )
 
         gradle_content.sub!(android_block_regex, updated_android_block)
-        
-        if smart_write(gradle_file, gradle_content)
+
+        if write_if_needed(gradle_file, gradle_content)
             Solara.logger.debug("Updated #{gradle_file} (#{@is_kotlin_gradle ? 'Kotlin' : 'Groovy'}) to use brand.properties")
         end
     end
@@ -149,7 +149,7 @@ project.ext {
                                end
                            end
 
-        smart_write(gradle_file, modified_content)
+        write_if_needed(gradle_file, modified_content)
     end
 
     def generate_source_sets(source_sets_string)
@@ -206,7 +206,7 @@ project.ext {
             modified_content.sub!(/(\s*android\s*\{)/) { "#{$1}\n    #{new_config.strip}" }
         end
 
-        smart_write(gradle_file, modified_content)
+        write_if_needed(gradle_file, modified_content)
     end
 
     def generate_keystore_config
